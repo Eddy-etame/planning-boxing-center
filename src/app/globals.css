@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-foreground: #ffffff;
+  --accent: #eab308;
+  --accent-foreground: #0f172a;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Premium micro-interactions & animations */
+.shiny-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.shiny-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 20%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(30deg);
+  transition: none;
+}
+
+.shiny-btn:hover::after {
+  left: 120%;
+  transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Grid styles matching reference */
+.poster-grid-cell {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.poster-grid-cell:hover {
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom Scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Magic UI utilities */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+
+.direction-reverse {
+  animation-direction: reverse;
+}
+
+/* Print Overrides */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-page {
+    width: 297mm;
+    height: 210mm;
+    margin: 0;
+    padding: 0;
+    page-break-after: always;
+  }
+}
+
+/* ===== PWA & RESPONSIVE STYLES ===== */
+
+/* Safe area for notched phones (iPhone X+) */
+@supports (padding: env(safe-area-inset-top)) {
+  header {
+    padding-top: env(safe-area-inset-top);
+  }
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Touch improvements for mobile */
+@media (hover: none) and (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .poster-grid-cell:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* Mobile small (<480px) */
+@media (max-width: 480px) {
+  .max-w-7xl {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  header .flex.items-center.gap-3 {
+    gap: 4px;
+  }
+  header button {
+    padding: 6px 8px;
+    font-size: 8px;
+  }
+}
+
+/* Mobile & Tablet (<768px) */
+@media (max-width: 768px) {
+  header {
+    height: auto !important;
+    padding: 8px 0;
+  }
+  header > div {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Tablet landscape (<1024px) */
+@media (max-width: 1024px) {
+  .poster-container-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Smooth fade-in animation for page transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Pulsing notification badge */
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.pulse-badge {
+  animation: pulse-badge 2s infinite;
+}
+
+/* Responsive poster scaling on small screens */
+@media (max-width: 1080px) {
+  #poster-container {
+    transform-origin: top left;
+    transform: scale(0.65);
+  }
+}
+
+@media (max-width: 640px) {
+  #poster-container {
+    transform: scale(0.38);
+  }
+}

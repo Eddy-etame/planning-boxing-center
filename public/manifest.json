@@ -1,0 +1,21 @@
+{
+  "name": "Boxing Center Plannings",
+  "short_name": "BC Plannings",
+  "description": "Plateforme de gestion de plannings internes pour Boxing Center",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
