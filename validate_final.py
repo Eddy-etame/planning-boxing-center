@@ -4,8 +4,10 @@ import re
 from collections import Counter
 from generate_plannings_db import find_mapped_files, parse_ods_file
 
-PL = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings"
-JS = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings\bc-plannings\src\data\plannings.js"
+import os
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PL = os.environ.get("PLANNINGS_SOURCE_DIR", os.path.join(SCRIPT_DIR, "sources"))
+JS = os.path.join(SCRIPT_DIR, "src", "data", "plannings.js")
 
 CHECKS = [
     ("minimes", "HYROX"),

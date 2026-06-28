@@ -4,8 +4,12 @@ import os
 import re
 import json
 
-PLANNINGS_DIR = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings"
-OUTPUT_FILE = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings\bc-plannings\src\data\plannings.js"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PLANNINGS_DIR = os.environ.get(
+    "PLANNINGS_SOURCE_DIR",
+    os.path.join(SCRIPT_DIR, "sources"),
+)
+OUTPUT_FILE = os.path.join(SCRIPT_DIR, "src", "data", "plannings.js")
 
 NS = {
     "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
