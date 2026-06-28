@@ -12,6 +12,8 @@ import { gyms, coachColors as defaultCoachColors, activityColors } from "@/data/
 import { BlurFade } from "@/components/magicui/BlurFade";
 import { Marquee } from "@/components/magicui/Marquee";
 import { triggerLocalNotification } from "@/components/PWARegister";
+import ScheduleGrid from "@/components/ScheduleGrid";
+import { loadPlanningsFromStorage } from "@/lib/planningStorage";
 
 export default function CoachDashboard() {
   const [session, setSession] = useState(null);
@@ -45,39 +47,18 @@ export default function CoachDashboard() {
   }, [router]);
 
   const loadDatabase = (coachName) => {
-    const localPlannings = localStorage.getItem("bc_plannings");
-    const localColors = localStorage.getItem("bc_coach_colors");
-
-    // Fetch initial database
-    fetch("/api/planning")
-      .then((res) => res.json())
-      .then((data) => {
-        if (localPlannings) {
-          setPlanningsList(JSON.parse(localPlannings));
-        } else {
-          setPlanningsList(data.plannings);
-        }
-
-        if (localColors) {
-          setCoachColors(JSON.parse(localColors));
-        } else {
-          setCoachColors(defaultCoachColors);
-        }
-        
-        // Setup initial notifications
-        setNotifications([
-          { id: 1, title: "Planning Rentrée 2026 publié !", message: "Le planning officiel a été publié par l'administrateur.", date: "Aujourd'hui" },
-          { id: 2, title: "Nouveau créneau disponible à Ramonville", message: "Le cours de Cross Training du mardi soir recherche un remplaçant.", date: "Hier" }
-        ]);
-
-        // Setup active cover requests
-        setCoverRequests([
-          { id: "req-1", gym: "ramonville", day: "mardi", timeSlot: "18h40-19h40", activity: "GRAPPLING", coach: "SONIA", status: "open" },
-          { id: "req-2", gym: "etats-unis", day: "jeudi", timeSlot: "12h40-13h20", activity: "BOXE ANGLAISE", coach: "VALENTIN GUTH", status: "open" }
-        ]);
-        
-        setLoading(false);
-      });
+    const { plannings, coachColors: colors } = loadPlanningsFromStorage();
+    setPlanningsList(plannings);
+    setCoachColors(colors);
+    setNotifications([
+      { id: 1, title: "Planning Rentrée 2026 publié !", message: "Le planning officiel a été publié par l'administrateur.", date: "Aujourd'hui" },
+      { id: 2, title: "Nouveau créneau disponible à Ramonville", message: "Le cours de Cross Training du mardi soir recherche un remplaçant.", date: "Hier" }
+    ]);
+    setCoverRequests([
+      { id: "req-1", gym: "ramonville", day: "mardi", timeSlot: "18h40-19h40", activity: "GRAPPLING", coach: "SONIA", status: "open" },
+      { id: "req-2", gym: "etats-unis-boxe", day: "jeudi", timeSlot: "12h40-13h20", activity: "BOXE ANGLAISE", coach: "VALENTIN GUTH", status: "open" }
+    ]);
+    setLoading(false);
   };
 
   const handleLogout = async () => {
@@ -512,7 +493,7 @@ export default function CoachDashboard() {
                   <div className="absolute inset-0 p-8 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <span className="text-xl font-black tracking-widest text-white/90">2026-2027</span>
-                      <img src="/logo.png" alt="Boxing Center Logo" style={{ height: "65px", objectFit: "contain" }} />
+                      <img src="/logo-light.png" alt="Boxing Center Logo" style={{ height: "65px", objectFit: "contain" }} />
                     </div>
                     <h2 className="text-4xl font-extrabold text-white text-center tracking-[0.08em] uppercase mb-2">
                       COACH {session?.name ? session.name.toUpperCase() : "MON PLANNING"}
@@ -641,48 +622,12 @@ export default function CoachDashboard() {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <div className="min-w-[800px]">
-                    <div className="grid grid-cols-7 gap-2 bg-slate-50 p-2 rounded-2xl mb-4 border border-slate-200">
-                      <div className="text-[10px] font-black text-slate-400 uppercase p-2">Horaire</div>
-                      {days.map(day => (
-                        <div key={day} className="text-[10px] font-black text-slate-900 uppercase p-2 text-center">{day}</div>
-                      ))}
-                    </div>
-
-                    {/* Generate schedule row groupings */}
-                    {displayGymTimeSlots.map((time, rowIdx) => (
-                      <div key={rowIdx} className="grid grid-cols-7 gap-2 items-center mb-2">
-                        <div className="text-xs font-bold text-slate-500 p-2 bg-slate-50/50 rounded-xl border border-slate-100">{time}</div>
-                        {days.map(day => {
-                          const course = gymSessions.find(
-                            c => c.day === day && matchTimeSlot(c.timeSlot, time)
-                          );
-
-                          if (!course) {
-                            return <div key={day} className="h-14 bg-slate-50/20 rounded-2xl border border-slate-100 flex items-center justify-center text-[10px] text-slate-300 font-bold uppercase">accès libre</div>;
-                          }
-
-                          return (
-                            <div
-                              key={day}
-                              className="h-14 p-2.5 rounded-2xl border flex flex-col justify-between transition-all hover:scale-[1.02] cursor-pointer"
-                              style={{
-                                backgroundColor: coachColors[course.coach] ? coachColors[course.coach] + "12" : "#f8fafc",
-                                borderColor: coachColors[course.coach] ? coachColors[course.coach] + "35" : "#e2e8f0"
-                              }}
-                            >
-                              <div className="text-[10px] font-black uppercase truncate" style={{ color: coachColors[course.coach] || "#000000" }}>
-                                {course.activity}
-                              </div>
-                              <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase">
-                                <span>{course.coach}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </div>
+                  <ScheduleGrid
+                    gymId={selectedGym}
+                    sessions={gymSessions}
+                    coachColors={coachColors}
+                    variant="dashboard"
+                  />
                 </div>
               </div>
             </BlurFade>
