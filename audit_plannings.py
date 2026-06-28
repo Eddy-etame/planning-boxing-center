@@ -3,8 +3,11 @@ import os
 from collections import Counter, defaultdict
 from generate_plannings_db import parse_ods_file, GYM_MAPPING
 
-PLANNINGS_DIR = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings"
-JS_FILE = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings\bc-plannings\src\data\plannings.js"
+PLANNINGS_DIR = os.environ.get(
+    "PLANNINGS_SOURCE_DIR",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "sources"),
+)
+JS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src", "data", "plannings.js")
 
 with open(JS_FILE, "r", encoding="utf-8") as f:
     content = f.read()

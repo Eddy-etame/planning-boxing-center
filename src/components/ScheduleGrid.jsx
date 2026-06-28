@@ -2,8 +2,11 @@
 
 import {
   buildColumnDescriptors,
-  findSession,
+  buildDayHeaderGroups,
+  getDayLabel,
   getTimeSlotsForSessions,
+  hasMultipleSubColumns,
+  resolveCellState,
 } from "@/lib/scheduleGrid";
 
 export default function ScheduleGrid({
@@ -18,6 +21,8 @@ export default function ScheduleGrid({
 }) {
   const timeSlots = getTimeSlotsForSessions(sessions);
   const columns = buildColumnDescriptors(gymId);
+  const dayGroups = buildDayHeaderGroups(columns);
+  const showSubHeader = hasMultipleSubColumns(gymId);
 
   const renderEmpty = (col, time) => {
     if (variant === "admin" && onAddSlot) {
@@ -45,19 +50,8 @@ export default function ScheduleGrid({
     );
   };
 
-  const renderCell = (col, time, timeIndex) => {
-    const { session, isSpanContinuation } = findSession(sessions, {
-      day: col.day,
-      subColumn: col.subColumn,
-      timeSlot: time,
-      timeIndex,
-      timeSlots,
-    });
-
-    if (isSpanContinuation) return null;
-    if (!session) return renderEmpty(col, time);
-
-    if (session.activity === "ACCES LIBRE") {
+  const renderSessionContent = (session, col, time) => {
+    if (!session || session.activity === "ACCES LIBRE") {
       return renderEmpty(col, time);
     }
 
@@ -120,76 +114,88 @@ export default function ScheduleGrid({
     );
   };
 
-  if (variant === "poster") {
-    return (
-      <div className="flex-grow flex flex-col p-4">
-        <div
-          className="grid gap-1.5 mb-1.5"
-          style={{ gridTemplateColumns: `80px repeat(${columns.length}, minmax(0, 1fr))` }}
-        >
-          <div />
-          {columns.map((col) => (
-            <div
-              key={col.key}
-              className="bg-[#2A4D7E] border border-slate-800 text-center py-3 rounded-lg font-black text-[10px] uppercase text-white"
-            >
-              {col.subColumn === 0 ? col.day : ""}
-            </div>
-          ))}
-        </div>
-        <div className="flex-grow flex flex-col gap-1.5">
-          {timeSlots.map((time, timeIndex) => (
-            <div
-              key={time}
-              className="grid gap-1.5 flex-1"
-              style={{ gridTemplateColumns: `80px repeat(${columns.length}, minmax(0, 1fr))` }}
-            >
-              <div className="bg-[#121829] border border-slate-900 rounded-lg flex items-center justify-center text-[10px] font-black text-white/80 px-1">
-                {time}
-              </div>
-              {columns.map((col) => (
-                <div key={col.key} className="min-h-[48px]">
-                  {renderCell(col, time, timeIndex)}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const posterTableClass = "w-full border-collapse table-fixed";
+  const dashboardTableClass = "w-full border-collapse min-w-[900px] table-fixed";
+
+  const thClass =
+    variant === "poster"
+      ? "bg-[#2A4D7E] border border-slate-800 text-center py-2 px-1 font-black text-[10px] uppercase text-white"
+      : "py-3 px-1 text-center border-r border-slate-100 last:border-0 text-[10px] font-black uppercase text-slate-400 bg-slate-50/50";
+
+  const timeThClass =
+    variant === "poster"
+      ? "bg-[#121829] border border-slate-900 text-center py-2 px-1 font-black text-[10px] uppercase text-slate-500 w-20"
+      : "py-3 px-2 w-28 text-center border-r border-slate-100 text-[10px] font-black uppercase text-slate-400 bg-slate-50/50";
+
+  const timeTdClass =
+    variant === "poster"
+      ? "bg-[#121829] border border-slate-900 rounded-lg text-[10px] font-black text-white/80 px-1 text-center align-middle w-20"
+      : "p-2 bg-slate-50 border-r border-slate-200 text-[10px] font-black text-center align-middle";
+
+  const tdClass =
+    variant === "poster"
+      ? "p-0.5 align-middle border border-slate-900/40"
+      : "p-1 border-r border-slate-100 align-middle";
+
+  const rowHeight = variant === "poster" ? "min-h-[48px]" : "h-24";
 
   return (
-    <div className="overflow-x-auto border border-slate-200 rounded-3xl shadow-sm bg-white">
-      <table className="w-full border-collapse min-w-[900px] table-fixed">
+    <div
+      className={
+        variant === "poster"
+          ? "flex-grow flex flex-col p-4 overflow-x-auto"
+          : "overflow-x-auto border border-slate-200 rounded-3xl shadow-sm bg-white"
+      }
+    >
+      <table className={variant === "poster" ? posterTableClass : dashboardTableClass}>
         <thead>
-          <tr className="border-b border-slate-200 bg-slate-50/50 text-[10px] font-black uppercase text-slate-400">
-            <th className="py-3 px-2 w-28 text-center border-r border-slate-100">Horaire</th>
-            {columns.map((col) => (
-              <th key={col.key} className="py-3 px-1 text-center border-r border-slate-100 last:border-0">
-                {col.subColumn === 0 ? col.day : "·"}
+          <tr className={variant === "dashboard" ? "border-b border-slate-200" : ""}>
+            <th className={timeThClass} rowSpan={showSubHeader ? 2 : 1}>
+              Horaire
+            </th>
+            {dayGroups.map((g) => (
+              <th key={g.day} className={thClass} colSpan={g.count}>
+                {getDayLabel(g.day)}
               </th>
             ))}
           </tr>
+          {showSubHeader && (
+            <tr>
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className={
+                    variant === "poster"
+                      ? "bg-[#1a3050] border border-slate-800 text-center py-1 font-black text-[8px] uppercase text-white/60"
+                      : "py-1 px-1 text-center border-r border-slate-100 text-[8px] font-black uppercase text-slate-300 bg-slate-50/30"
+                  }
+                >
+                  {dayGroups.find((g) => g.day === col.day)?.count > 1 ? col.subColumn + 1 : ""}
+                </th>
+              ))}
+            </tr>
+          )}
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className={variant === "dashboard" ? "divide-y divide-slate-100" : ""}>
           {timeSlots.map((time, timeIndex) => (
-            <tr key={time} className="h-24">
-              <td className="p-2 bg-slate-50 border-r border-slate-200 text-[10px] font-black text-center align-middle">
-                {time}
-              </td>
+            <tr key={time} className={rowHeight}>
+              <td className={timeTdClass}>{time}</td>
               {columns.map((col) => {
-                const { isSpanContinuation } = findSession(sessions, {
-                  day: col.day,
-                  subColumn: col.subColumn,
-                  timeSlot: time,
-                  timeIndex,
-                  timeSlots,
-                });
-                if (isSpanContinuation) return null;
+                const state = resolveCellState(sessions, columns, col.colIndex, timeIndex, timeSlots, gymId);
+                if (state.kind === "covered") return null;
+
+                const rowSpan = state.kind === "origin" ? state.rowSpan : 1;
+                const colSpan = state.kind === "origin" ? state.colSpan : 1;
+                const session = state.kind === "origin" ? state.session : null;
+
                 return (
-                  <td key={col.key} className="p-1 border-r border-slate-100 align-middle">
-                    {renderCell(col, time, timeIndex)}
+                  <td
+                    key={col.key}
+                    className={tdClass}
+                    rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                    colSpan={colSpan > 1 ? colSpan : undefined}
+                  >
+                    {renderSessionContent(session, col, time)}
                   </td>
                 );
               })}

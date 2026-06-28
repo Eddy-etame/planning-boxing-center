@@ -12,6 +12,12 @@ import Image from "next/image";
 import { gyms, initialPlannings, coachColors as defaultCoachColors, activityColors } from "@/data/plannings";
 import ScheduleGrid from "@/components/ScheduleGrid";
 import { loadPlanningsFromStorage, savePlanningsToStorage } from "@/lib/planningStorage";
+import {
+  buildCoachPosterContainerHTML,
+  buildGymPosterContainerHTML,
+  capturePosterElement,
+  createPosterContainer,
+} from "@/lib/posterExport";
 
 const days = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
 
@@ -23,6 +29,32 @@ const parseTime = (s) => {
 };
 
 const sortTimeSlots = (slots) => [...slots].sort((a, b) => parseTime(a) - parseTime(b));
+
+async function captureGymPosterCanvas(gym, sessions, coachColors) {
+  const container = createPosterContainer(
+    buildGymPosterContainerHTML({
+      gymId: gym.id,
+      gymName: gym.name,
+      sessions,
+      coachColors,
+    }),
+    "1200px"
+  );
+  return capturePosterElement(container, 2);
+}
+
+async function captureCoachPosterCanvas(coach, sessions, coachColors, getGymName) {
+  const container = createPosterContainer(
+    buildCoachPosterContainerHTML({
+      coachName: coach,
+      sessions,
+      coachColors,
+      getGymName,
+    }),
+    "1000px"
+  );
+  return capturePosterElement(container, 2);
+}
 
 export default function AdminDashboard() {
   const [session, setSession] = useState(null);
@@ -222,7 +254,6 @@ export default function AdminDashboard() {
   };
 
   const handleDownloadAllVisuals = async () => {
-    const html2canvas = (await import("html2canvas")).default;
     const JSZip = (await import("jszip")).default;
     const activeGyms = gyms;
     const activeCoaches = allCoaches;
@@ -245,22 +276,6 @@ export default function AdminDashboard() {
       statusDiv.innerHTML = `<div>${msg}</div><div style="margin-top:8px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden;"><div style="background:linear-gradient(90deg,#38BDF8,#818CF8);height:100%;width:${pct()}%;transition:width 0.3s;"></div></div><div style="margin-top:5px;color:#94A3B8;font-size:10px;">Progression: ${currentCount}/${totalCount} (${pct()}%)</div>`;
     };
 
-    const cleanSlot = (s) => s.replace(/\s+/g, '').replace('-', '/').toLowerCase();
-    const matchTimeSlot = (slot1, slot2) => {
-      if (!slot1 || !slot2) return false;
-      return cleanSlot(slot1) === cleanSlot(slot2);
-    };
-
-    const parseTime = (s) => {
-      const match = s.match(/(\d+)h(\d*)/);
-      if (!match) return 0;
-      return parseInt(match[1]) * 60 + (match[2] ? parseInt(match[2]) : 0);
-    };
-    const sortTimeSlots = (slots) => [...slots].sort((a, b) => parseTime(a) - parseTime(b));
-    const days = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-
-    const canvasToBlob = (canvas) => new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-
     for (const currentPeriod of allPeriods) {
       const periodLabel = currentPeriod === "rentree-2026" ? "Rentrée 2026" : "Été 2026";
       const periodFolder = zip.folder(currentPeriod);
@@ -274,64 +289,13 @@ export default function AdminDashboard() {
 
       const gymSessions = plannings.filter(c => c.salle === gym.id && c.period === currentPeriod);
       if (gymSessions.length === 0) continue;
-      const computedSlots = sortTimeSlots(Array.from(new Set(gymSessions.map(c => c.timeSlot))));
-      const timeSlots = computedSlots.length > 0 ? computedSlots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
-      const headerFontSize = gym.name.length > 18 ? "28px" : "40px";
 
-      const container = document.createElement("div");
-      container.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1000px;height:1000px;background:#0A0D1A;display:flex;flex-direction:column;padding:16px;box-sizing:border-box;font-family:Montserrat,sans-serif;color:#FFF;";
-
-      container.innerHTML = `
-        <div style="position:relative;height:220px;width:100%;overflow:hidden;border-bottom:2px solid #020617;border-radius:16px;margin-bottom:16px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
-          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,#0A0D1A);opacity:0.95;"></div>
-          <div style="position:absolute;inset:0;background-color:rgba(2,6,23,0.2);"></div>
-          <div style="position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
-            <div style="display:flex;justify-content:space-between;align-items:start;">
-              <span style="font-size:20px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.9);">2026-2027</span>
-              <img src="/logo-light.png" style="height:60px;object-fit:contain;" />
-            </div>
-            <h2 style="font-size:${headerFontSize};font-weight:900;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;color:#FFF;text-shadow:0 4px 6px rgba(0,0,0,0.3);">
-              SALLE ${gym.name.toUpperCase()}
-            </h2>
-          </div>
-        </div>
-        <div style="flex-grow:1;display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
-            <div style="background-color:#121829;border:1px solid #1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;">Horaire</div>
-            ${days.map(d => `<div style="background-color:#2A4D7E;border:1px solid #1e293b;text-align:center;padding:12px 0;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#FFF;">${d}</div>`).join('')}
-          </div>
-          <div style="flex-grow:1;display:grid;grid-template-rows:repeat(${timeSlots.length},minmax(0,1fr));gap:6px;">
-            ${timeSlots.map(time => `
-              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:100%;">
-                <div style="background-color:#121829;border:1px solid #0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.8);text-align:center;letter-spacing:0.02em;">${time}</div>
-                ${days.map(day => {
-                  const course = gymSessions.find(c => c.day === day && matchTimeSlot(c.timeSlot, time));
-                  if (!course || course.activity === "ACCES LIBRE") {
-                    return `<div style="background-color:rgba(14,18,34,0.4);border:1px solid rgba(30,41,59,0.6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:0 4px;">accès libre</div>`;
-                  }
-                  const bgCol = coachColors[course.coach.toUpperCase()] || "#475569";
-                  return `
-                    <div style="background-color:${bgCol};border:1px solid #020617;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.15);box-sizing:border-box;height:100%;">
-                      <span style="font-size:9px;font-weight:900;color:#FFF;text-transform:uppercase;line-height:1.1;max-width:100%;word-break:break-all;">${course.activity}</span>
-                      <span style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-top:4px;letter-spacing:0.05em;">${course.coach}</span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-
-      document.body.appendChild(container);
       try {
-        const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: "#0A0D1A" });
-        const blob = await canvasToBlob(canvas);
+        const canvas = await captureGymPosterCanvas(gym, gymSessions, coachColors);
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
         gymFolder.file(`planning-salle-${gym.id}-${period}.png`, blob);
       } catch (err) {
         console.error(`Error capturing gym ${gym.id}:`, err);
-      } finally {
-        document.body.removeChild(container);
       }
     }
 
@@ -346,66 +310,14 @@ export default function AdminDashboard() {
         return (cn === target || cn.includes(target)) && c.period === currentPeriod;
       });
       
-      // Skip coaches with no sessions in the current period
       if (coachSessions.length === 0) continue;
 
-      const computedSlots = sortTimeSlots(Array.from(new Set(coachSessions.map(c => c.timeSlot))));
-      const timeSlots = computedSlots.length > 0 ? computedSlots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
-
-      const container = document.createElement("div");
-      container.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1000px;height:1000px;background:#0A0D1A;display:flex;flex-direction:column;padding:16px;box-sizing:border-box;font-family:Montserrat,sans-serif;color:#FFF;";
-
-      container.innerHTML = `
-        <div style="position:relative;height:220px;width:100%;overflow:hidden;border-bottom:2px solid #020617;border-radius:16px;margin-bottom:16px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
-          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,#0A0D1A);opacity:0.95;"></div>
-          <div style="position:absolute;inset:0;background-color:rgba(2,6,23,0.2);"></div>
-          <div style="position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
-            <div style="display:flex;justify-content:space-between;align-items:start;">
-              <span style="font-size:20px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.9);">2026-2027</span>
-              <img src="/logo-light.png" style="height:60px;object-fit:contain;" />
-            </div>
-            <h2 style="font-size:40px;font-weight:900;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;color:#FFF;text-shadow:0 4px 6px rgba(0,0,0,0.3);">
-              COACH ${coach.toUpperCase()}
-            </h2>
-          </div>
-        </div>
-        <div style="flex-grow:1;display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
-            <div style="background-color:#121829;border:1px solid #1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;">Horaire</div>
-            ${days.map(d => `<div style="background-color:#2A4D7E;border:1px solid #1e293b;text-align:center;padding:12px 0;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#FFF;">${d}</div>`).join('')}
-          </div>
-          <div style="flex-grow:1;display:grid;grid-template-rows:repeat(${timeSlots.length},minmax(0,1fr));gap:6px;">
-            ${timeSlots.map(time => `
-              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:100%;">
-                <div style="background-color:#121829;border:1px solid #0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.8);text-align:center;letter-spacing:0.02em;">${time}</div>
-                ${days.map(day => {
-                  const course = coachSessions.find(c => c.day === day && matchTimeSlot(c.timeSlot, time));
-                  if (!course || course.activity === "ACCES LIBRE") {
-                    return `<div style="background-color:rgba(14,18,34,0.4);border:1px solid rgba(30,41,59,0.6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:0 4px;">accès libre</div>`;
-                  }
-                  const bgCol = coachColors[coach.toUpperCase()] || "#475569";
-                  return `
-                    <div style="background-color:${bgCol};border:1px solid #020617;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.15);box-sizing:border-box;height:100%;">
-                      <span style="font-size:9px;font-weight:900;color:#FFF;text-transform:uppercase;line-height:1.1;max-width:100%;word-break:break-all;">${course.activity}</span>
-                      <span style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-top:4px;letter-spacing:0.02em;">${getGymName(course.salle).toUpperCase()}</span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-
-      document.body.appendChild(container);
       try {
-        const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: "#0A0D1A" });
-        const blob = await canvasToBlob(canvas);
+        const canvas = await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName);
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
         coachFolder.file(`planning-coach-${coach.toLowerCase()}-${period}.png`, blob);
       } catch (err) {
         console.error(`Error capturing coach ${coach}:`, err);
-      } finally {
-        document.body.removeChild(container);
       }
     }
 
@@ -430,7 +342,6 @@ export default function AdminDashboard() {
   };
 
   const handleDownloadAllSeparately = async () => {
-    const html2canvas = (await import("html2canvas")).default;
     const activeGyms = gyms;
     const activeCoaches = allCoaches;
 
@@ -450,164 +361,42 @@ export default function AdminDashboard() {
       statusDiv.innerHTML = `<div>${msg}</div><div style="margin-top:8px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden;"><div style="background:linear-gradient(90deg,#38BDF8,#818CF8);height:100%;width:${pct()}%;transition:width 0.3s;"></div></div><div style="margin-top:5px;color:#94A3B8;font-size:10px;">Progression: ${currentCount}/${totalCount} (${pct()}%)</div>`;
     };
 
-    const cleanSlot = (s) => s.replace(/\s+/g, '').replace('-', '/').toLowerCase();
-    const matchTimeSlot = (slot1, slot2) => {
-      if (!slot1 || !slot2) return false;
-      return cleanSlot(slot1) === cleanSlot(slot2);
-    };
-
-    const parseTime = (s) => {
-      const match = s.match(/(\d+)h(\d*)/);
-      if (!match) return 0;
-      return parseInt(match[1]) * 60 + (match[2] ? parseInt(match[2]) : 0);
-    };
-    const sortTimeSlots = (slots) => [...slots].sort((a, b) => parseTime(a) - parseTime(b));
-    const days = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-
     for (const currentPeriod of allPeriods) {
       const periodLabel = currentPeriod === "rentree-2026" ? "Rentrée 2026" : "Été 2026";
 
-      // 1. Gyms
       for (const gym of activeGyms) {
         currentCount++;
         updateStatus(`📍 ${periodLabel} — Salle: ${gym.name}...`);
-
         const gymSessions = plannings.filter(c => c.salle === gym.id && c.period === currentPeriod);
         if (gymSessions.length === 0) continue;
-        const computedSlots = sortTimeSlots(Array.from(new Set(gymSessions.map(c => c.timeSlot))));
-        const timeSlots = computedSlots.length > 0 ? computedSlots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
-        const headerFontSize = gym.name.length > 18 ? "28px" : "40px";
-
-        const container = document.createElement("div");
-        container.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1000px;height:1000px;background:#0A0D1A;display:flex;flex-direction:column;padding:16px;box-sizing:border-box;font-family:Montserrat,sans-serif;color:#FFF;";
-
-        container.innerHTML = `
-          <div style="position:relative;height:220px;width:100%;overflow:hidden;border-bottom:2px solid #020617;border-radius:16px;margin-bottom:16px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,#0A0D1A);opacity:0.95;"></div>
-            <div style="position:absolute;inset:0;background-color:rgba(2,6,23,0.2);"></div>
-            <div style="position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
-              <div style="display:flex;justify-content:space-between;align-items:start;">
-                <span style="font-size:20px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.9);">2026-2027</span>
-                <img src="/logo-light.png" style="height:60px;object-fit:contain;" />
-              </div>
-              <h2 style="font-size:${headerFontSize};font-weight:900;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;color:#FFF;text-shadow:0 4px 6px rgba(0,0,0,0.3);">
-                SALLE ${gym.name.toUpperCase()}
-              </h2>
-            </div>
-          </div>
-          <div style="flex-grow:1;display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
-              <div style="background-color:#121829;border:1px solid #1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;">Horaire</div>
-              ${days.map(d => `<div style="background-color:#2A4D7E;border:1px solid #1e293b;text-align:center;padding:12px 0;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#FFF;">${d}</div>`).join('')}
-            </div>
-            <div style="flex-grow:1;display:grid;grid-template-rows:repeat(${timeSlots.length},minmax(0,1fr));gap:6px;">
-              ${timeSlots.map(time => `
-                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:100%;">
-                  <div style="background-color:#121829;border:1px solid #0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.8);text-align:center;letter-spacing:0.02em;">${time}</div>
-                  ${days.map(day => {
-                    const course = gymSessions.find(c => c.day === day && matchTimeSlot(c.timeSlot, time));
-                    if (!course || course.activity === "ACCES LIBRE") {
-                      return `<div style="background-color:rgba(14,18,34,0.4);border:1px solid rgba(30,41,59,0.6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:0 4px;">accès libre</div>`;
-                    }
-                    const bgCol = coachColors[course.coach.toUpperCase()] || "#475569";
-                    return `
-                      <div style="background-color:${bgCol};border:1px solid #020617;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.15);box-sizing:border-box;height:100%;">
-                        <span style="font-size:9px;font-weight:900;color:#FFF;text-transform:uppercase;line-height:1.1;max-width:100%;word-break:break-all;">${course.activity}</span>
-                        <span style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-top:4px;letter-spacing:0.05em;">${course.coach}</span>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(container);
         try {
-          const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: "#0A0D1A" });
+          const canvas = await captureGymPosterCanvas(gym, gymSessions, coachColors);
           const link = document.createElement("a");
           link.download = `planning-salle-${gym.id}-${currentPeriod}.png`;
           link.href = canvas.toDataURL("image/png");
           link.click();
         } catch (err) {
           console.error(err);
-        } finally {
-          document.body.removeChild(container);
         }
       }
 
-      // 2. Coaches
       for (const coach of activeCoaches) {
         currentCount++;
         updateStatus(`🥊 ${periodLabel} — Coach: ${coach}...`);
-
         const coachSessions = plannings.filter(c => {
           const cn = c.coach.toUpperCase();
           const target = coach.toUpperCase();
           return (cn === target || cn.includes(target)) && c.period === currentPeriod;
         });
         if (coachSessions.length === 0) continue;
-
-        const computedSlots = sortTimeSlots(Array.from(new Set(coachSessions.map(c => c.timeSlot))));
-        const timeSlots = computedSlots.length > 0 ? computedSlots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
-
-        const container = document.createElement("div");
-        container.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1000px;height:1000px;background:#0A0D1A;display:flex;flex-direction:column;padding:16px;box-sizing:border-box;font-family:Montserrat,sans-serif;color:#FFF;";
-
-        container.innerHTML = `
-          <div style="position:relative;height:220px;width:100%;overflow:hidden;border-bottom:2px solid #020617;border-radius:16px;margin-bottom:16px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,#0A0D1A);opacity:0.95;"></div>
-            <div style="position:absolute;inset:0;background-color:rgba(2,6,23,0.2);"></div>
-            <div style="position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
-              <div style="display:flex;justify-content:space-between;align-items:start;">
-                <span style="font-size:20px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.9);">2026-2027</span>
-                <img src="/logo-light.png" style="height:60px;object-fit:contain;" />
-              </div>
-              <h2 style="font-size:40px;font-weight:900;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;color:#FFF;text-shadow:0 4px 6px rgba(0,0,0,0.3);">
-                COACH ${coach.toUpperCase()}
-              </h2>
-            </div>
-          </div>
-          <div style="flex-grow:1;display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
-              <div style="background-color:#121829;border:1px solid #1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;">Horaire</div>
-              ${days.map(d => `<div style="background-color:#2A4D7E;border:1px solid #1e293b;text-align:center;padding:12px 0;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#FFF;">${d}</div>`).join('')}
-            </div>
-            <div style="flex-grow:1;display:grid;grid-template-rows:repeat(${timeSlots.length},minmax(0,1fr));gap:6px;">
-              ${timeSlots.map(time => `
-                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:100%;">
-                  <div style="background-color:#121829;border:1px solid #0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.8);text-align:center;letter-spacing:0.02em;">${time}</div>
-                  ${days.map(day => {
-                    const course = coachSessions.find(c => c.day === day && matchTimeSlot(c.timeSlot, time));
-                    if (!course || course.activity === "ACCES LIBRE") {
-                      return `<div style="background-color:rgba(14,18,34,0.4);border:1px solid rgba(30,41,59,0.6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:0 4px;">accès libre</div>`;
-                    }
-                    const bgCol = coachColors[coach.toUpperCase()] || "#475569";
-                    return `
-                      <div style="background-color:${bgCol};border:1px solid #020617;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.15);box-sizing:border-box;height:100%;">
-                        <span style="font-size:9px;font-weight:900;color:#FFF;text-transform:uppercase;line-height:1.1;max-width:100%;word-break:break-all;">${course.activity}</span>
-                        <span style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-top:4px;letter-spacing:0.02em;">${getGymName(course.salle).toUpperCase()}</span>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(container);
         try {
-          const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: "#0A0D1A" });
+          const canvas = await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName);
           const link = document.createElement("a");
           link.download = `planning-coach-${coach.toLowerCase()}-${currentPeriod}.png`;
           link.href = canvas.toDataURL("image/png");
           link.click();
         } catch (err) {
           console.error(err);
-        } finally {
-          document.body.removeChild(container);
         }
       }
     }
@@ -617,7 +406,6 @@ export default function AdminDashboard() {
   };
 
   const handleDownloadAllPDF = async () => {
-    const html2canvas = (await import("html2canvas")).default;
     const { jsPDF } = await import("jspdf");
     const activeGyms = gyms;
     const activeCoaches = allCoaches;
@@ -638,188 +426,51 @@ export default function AdminDashboard() {
       statusDiv.innerHTML = `<div>${msg}</div><div style="margin-top:8px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden;"><div style="background:linear-gradient(90deg,#38BDF8,#818CF8);height:100%;width:${pct()}%;transition:width 0.3s;"></div></div><div style="margin-top:5px;color:#94A3B8;font-size:10px;">Progression: ${currentCount}/${totalCount} (${pct()}%)</div>`;
     };
 
-    const cleanSlot = (s) => s.replace(/\s+/g, '').replace('-', '/').toLowerCase();
-    const matchTimeSlot = (slot1, slot2) => {
-      if (!slot1 || !slot2) return false;
-      return cleanSlot(slot1) === cleanSlot(slot2);
-    };
-
-    const parseTime = (s) => {
-      const match = s.match(/(\d+)h(\d*)/);
-      if (!match) return 0;
-      return parseInt(match[1]) * 60 + (match[2] ? parseInt(match[2]) : 0);
-    };
-    const sortTimeSlots = (slots) => [...slots].sort((a, b) => parseTime(a) - parseTime(b));
-    const days = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-
-    // Initialize PDF with square dimensions matching poster
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: [1000, 1000]
-    });
-    
+    const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1200, 1000] });
     let isFirstPage = true;
 
     for (const currentPeriod of allPeriods) {
       const periodLabel = currentPeriod === "rentree-2026" ? "Rentrée 2026" : "Été 2026";
 
-      // 1. Gyms
       for (const gym of activeGyms) {
         currentCount++;
         updateStatus(`📍 ${periodLabel} — Ajout de la Salle: ${gym.name} au PDF...`);
-
         const gymSessions = plannings.filter(c => c.salle === gym.id && c.period === currentPeriod);
         if (gymSessions.length === 0) continue;
-        const computedSlots = sortTimeSlots(Array.from(new Set(gymSessions.map(c => c.timeSlot))));
-        const timeSlots = computedSlots.length > 0 ? computedSlots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
-        const headerFontSize = gym.name.length > 18 ? "28px" : "40px";
-
-        const container = document.createElement("div");
-        container.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1000px;height:1000px;background:#0A0D1A;display:flex;flex-direction:column;padding:16px;box-sizing:border-box;font-family:Montserrat,sans-serif;color:#FFF;";
-
-        container.innerHTML = `
-          <div style="position:relative;height:220px;width:100%;overflow:hidden;border-bottom:2px solid #020617;border-radius:16px;margin-bottom:16px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,#0A0D1A);opacity:0.95;"></div>
-            <div style="position:absolute;inset:0;background-color:rgba(2,6,23,0.2);"></div>
-            <div style="position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
-              <div style="display:flex;justify-content:space-between;align-items:start;">
-                <span style="font-size:20px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.9);">2026-2027</span>
-                <img src="/logo-light.png" style="height:60px;object-fit:contain;" />
-              </div>
-              <h2 style="font-size:${headerFontSize};font-weight:900;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;color:#FFF;text-shadow:0 4px 6px rgba(0,0,0,0.3);">
-                SALLE ${gym.name.toUpperCase()}
-              </h2>
-            </div>
-          </div>
-          <div style="flex-grow:1;display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
-              <div style="background-color:#121829;border:1px solid #1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;">Horaire</div>
-              ${days.map(d => `<div style="background-color:#2A4D7E;border:1px solid #1e293b;text-align:center;padding:12px 0;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#FFF;">${d}</div>`).join('')}
-            </div>
-            <div style="flex-grow:1;display:grid;grid-template-rows:repeat(${timeSlots.length},minmax(0,1fr));gap:6px;">
-              ${timeSlots.map(time => `
-                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:100%;">
-                  <div style="background-color:#121829;border:1px solid #0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.8);text-align:center;letter-spacing:0.02em;">${time}</div>
-                  ${days.map(day => {
-                    const course = gymSessions.find(c => c.day === day && matchTimeSlot(c.timeSlot, time));
-                    if (!course || course.activity === "ACCES LIBRE") {
-                      return `<div style="background-color:rgba(14,18,34,0.4);border:1px solid rgba(30,41,59,0.6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:0 4px;">accès libre</div>`;
-                    }
-                    const bgCol = coachColors[course.coach.toUpperCase()] || "#475569";
-                    return `
-                      <div style="background-color:${bgCol};border:1px solid #020617;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.15);box-sizing:border-box;height:100%;">
-                        <span style="font-size:9px;font-weight:900;color:#FFF;text-transform:uppercase;line-height:1.1;max-width:100%;word-break:break-all;">${course.activity}</span>
-                        <span style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-top:4px;letter-spacing:0.05em;">${course.coach}</span>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(container);
         try {
-          const canvas = await html2canvas(container, { scale: 1.5, useCORS: true, backgroundColor: "#0A0D1A" });
+          const canvas = await captureGymPosterCanvas(gym, gymSessions, coachColors);
           const imgData = canvas.toDataURL("image/jpeg", 0.9);
-          
-          if (!isFirstPage) {
-            pdf.addPage([1000, 1000]);
-          } else {
-            isFirstPage = false;
-          }
-          pdf.addImage(imgData, "JPEG", 0, 0, 1000, 1000);
+          if (!isFirstPage) pdf.addPage([1200, 1000]);
+          else isFirstPage = false;
+          pdf.addImage(imgData, "JPEG", 0, 0, 1200, 1000);
         } catch (err) {
           console.error(err);
-        } finally {
-          document.body.removeChild(container);
         }
       }
 
-      // 2. Coaches
       for (const coach of activeCoaches) {
         currentCount++;
         updateStatus(`🥊 ${periodLabel} — Ajout du Coach: ${coach} au PDF...`);
-
         const coachSessions = plannings.filter(c => {
           const cn = c.coach.toUpperCase();
           const target = coach.toUpperCase();
           return (cn === target || cn.includes(target)) && c.period === currentPeriod;
         });
         if (coachSessions.length === 0) continue;
-
-        const computedSlots = sortTimeSlots(Array.from(new Set(coachSessions.map(c => c.timeSlot))));
-        const timeSlots = computedSlots.length > 0 ? computedSlots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
-
-        const container = document.createElement("div");
-        container.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1000px;height:1000px;background:#0A0D1A;display:flex;flex-direction:column;padding:16px;box-sizing:border-box;font-family:Montserrat,sans-serif;color:#FFF;";
-
-        container.innerHTML = `
-          <div style="position:relative;height:220px;width:100%;overflow:hidden;border-bottom:2px solid #020617;border-radius:16px;margin-bottom:16px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,#0A0D1A);opacity:0.95;"></div>
-            <div style="position:absolute;inset:0;background-color:rgba(2,6,23,0.2);"></div>
-            <div style="position:absolute;inset:0;padding:32px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
-              <div style="display:flex;justify-content:space-between;align-items:start;">
-                <span style="font-size:20px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.9);">2026-2027</span>
-                <img src="/logo-light.png" style="height:60px;object-fit:contain;" />
-              </div>
-              <h2 style="font-size:40px;font-weight:900;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;color:#FFF;text-shadow:0 4px 6px rgba(0,0,0,0.3);">
-                COACH ${coach.toUpperCase()}
-              </h2>
-            </div>
-          </div>
-          <div style="flex-grow:1;display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
-              <div style="background-color:#121829;border:1px solid #1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;">Horaire</div>
-              ${days.map(d => `<div style="background-color:#2A4D7E;border:1px solid #1e293b;text-align:center;padding:12px 0;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#FFF;">${d}</div>`).join('')}
-            </div>
-            <div style="flex-grow:1;display:grid;grid-template-rows:repeat(${timeSlots.length},minmax(0,1fr));gap:6px;">
-              ${timeSlots.map(time => `
-                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:100%;">
-                  <div style="background-color:#121829;border:1px solid #0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.8);text-align:center;letter-spacing:0.02em;">${time}</div>
-                  ${days.map(day => {
-                    const course = coachSessions.find(c => c.day === day && matchTimeSlot(c.timeSlot, time));
-                    if (!course || course.activity === "ACCES LIBRE") {
-                      return `<div style="background-color:rgba(14,18,34,0.4);border:1px solid rgba(30,41,59,0.6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:0 4px;">accès libre</div>`;
-                    }
-                    const bgCol = coachColors[coach.toUpperCase()] || "#475569";
-                    return `
-                      <div style="background-color:${bgCol};border:1px solid #020617;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.15);box-sizing:border-box;height:100%;">
-                        <span style="font-size:9px;font-weight:900;color:#FFF;text-transform:uppercase;line-height:1.1;max-width:100%;word-break:break-all;">${course.activity}</span>
-                        <span style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-top:4px;letter-spacing:0.02em;">${getGymName(course.salle).toUpperCase()}</span>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(container);
         try {
-          const canvas = await html2canvas(container, { scale: 1.5, useCORS: true, backgroundColor: "#0A0D1A" });
+          const canvas = await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName);
           const imgData = canvas.toDataURL("image/jpeg", 0.9);
-          
-          if (!isFirstPage) {
-            pdf.addPage([1000, 1000]);
-          } else {
-            isFirstPage = false;
-          }
+          if (!isFirstPage) pdf.addPage([1000, 1000]);
+          else isFirstPage = false;
           pdf.addImage(imgData, "JPEG", 0, 0, 1000, 1000);
         } catch (err) {
           console.error(err);
-        } finally {
-          document.body.removeChild(container);
         }
       }
     }
 
     updateStatus("📦 Finalisation du PDF...");
     pdf.save("plannings-boxing-center-tous.pdf");
-
     document.body.removeChild(statusDiv);
     alert("✅ Le document PDF unique a été généré et téléchargé avec succès !");
   };

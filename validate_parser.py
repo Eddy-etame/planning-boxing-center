@@ -8,7 +8,10 @@ from generate_plannings_db import (
 import zipfile
 import xml.etree.ElementTree as ET
 
-PL = r"c:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings"
+PL = os.environ.get(
+    "PLANNINGS_SOURCE_DIR",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "sources"),
+)
 
 def dump_sheet(path, mapping_key, sheet_filter=None):
     with zipfile.ZipFile(path) as z:

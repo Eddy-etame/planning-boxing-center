@@ -31,26 +31,54 @@ export function getSubColumns(gymId) {
   return gymGridConfig[gymId]?.subColumns || null;
 }
 
+export function getDaySubColumnCount(gymId, day) {
+  const sub = getSubColumns(gymId);
+  return sub?.[day] || 1;
+}
+
 export function getTotalColumns(gymId) {
   const sub = getSubColumns(gymId);
   if (!sub) return DEFAULT_DAYS.length;
   return DEFAULT_DAYS.reduce((sum, day) => sum + (sub[day] || 1), 0);
 }
 
-/** Build column descriptors: [{ day, subColumn, key }] */
+/** Build column descriptors: [{ day, subColumn, key, colIndex }] */
 export function buildColumnDescriptors(gymId) {
   const sub = getSubColumns(gymId);
   if (!sub) {
-    return DEFAULT_DAYS.map((day) => ({ day, subColumn: 0, key: day }));
+    return DEFAULT_DAYS.map((day, colIndex) => ({ day, subColumn: 0, key: day, colIndex }));
   }
   const cols = [];
+  let colIndex = 0;
   for (const day of DEFAULT_DAYS) {
     const count = sub[day] || 1;
     for (let sc = 0; sc < count; sc++) {
-      cols.push({ day, subColumn: sc, key: `${day}-${sc}` });
+      cols.push({ day, subColumn: sc, key: `${day}-${sc}`, colIndex: colIndex++ });
     }
   }
   return cols;
+}
+
+/** Group columns by day for header colspan */
+export function buildDayHeaderGroups(columns) {
+  const groups = [];
+  let i = 0;
+  while (i < columns.length) {
+    const day = columns[i].day;
+    let count = 0;
+    while (i + count < columns.length && columns[i + count].day === day) {
+      count++;
+    }
+    groups.push({ day, count, startIndex: i });
+    i += count;
+  }
+  return groups;
+}
+
+export function hasMultipleSubColumns(gymId) {
+  const sub = getSubColumns(gymId);
+  if (!sub) return false;
+  return Object.values(sub).some((n) => n > 1);
 }
 
 export function getTimeSlotsForSessions(sessions) {
@@ -59,9 +87,114 @@ export function getTimeSlotsForSessions(sessions) {
 }
 
 /**
- * Find session at grid position, respecting subColumn and rowSpan coverage.
+ * Normalize full-width ODS cells that were anchored on the last sub-column.
  */
-export function findSession(sessions, { day, subColumn = 0, timeSlot, timeIndex, timeSlots }) {
+export function normalizeSessionSpan(session, gymId) {
+  const daySubs = getDaySubColumnCount(gymId, session.day);
+  const sc = session.subColumn ?? 0;
+  const cs = session.colSpan || 1;
+  if (cs >= daySubs && sc > 0) {
+    return { ...session, subColumn: 0, colSpan: daySubs };
+  }
+  if (cs > daySubs - sc) {
+    return { ...session, colSpan: Math.max(1, daySubs - sc) };
+  }
+  return session;
+}
+
+export function getSessionColStart(session, columns) {
+  return columns.findIndex(
+    (c) => c.day === session.day && c.subColumn === (session.subColumn ?? 0)
+  );
+}
+
+/** Effective colspan capped to remaining sub-columns for that day */
+export function getEffectiveColSpan(session, columns, colStart) {
+  const cs = session.colSpan || 1;
+  const day = session.day;
+  let count = 0;
+  for (let i = colStart; i < columns.length && columns[i].day === day && count < cs; i++) {
+    count++;
+  }
+  return Math.max(1, count);
+}
+
+export function getSessionGridBounds(session, columns, timeSlots, gymId) {
+  const normalized = normalizeSessionSpan(session, gymId);
+  const colStart = getSessionColStart(normalized, columns);
+  if (colStart < 0) return null;
+  const rowStart = timeSlots.findIndex((t) => matchTimeSlot(t, normalized.timeSlot));
+  if (rowStart < 0) return null;
+  const colSpan = getEffectiveColSpan(normalized, columns, colStart);
+  const rowSpan = normalized.rowSpan || 1;
+  return {
+    session: normalized,
+    colStart,
+    rowStart,
+    colSpan,
+    rowSpan,
+    colEnd: colStart + colSpan,
+    rowEnd: rowStart + rowSpan,
+  };
+}
+
+/**
+ * Resolve what to render at grid position (colIndex, timeIndex).
+ * Returns { kind: 'origin'|'covered'|'empty', session?, rowSpan?, colSpan? }
+ */
+export function resolveCellState(sessions, columns, colIndex, timeIndex, timeSlots, gymId) {
+  let origin = null;
+  let covered = null;
+
+  for (const raw of sessions) {
+    const bounds = getSessionGridBounds(raw, columns, timeSlots, gymId);
+    if (!bounds) continue;
+
+    const inRect =
+      colIndex >= bounds.colStart &&
+      colIndex < bounds.colEnd &&
+      timeIndex >= bounds.rowStart &&
+      timeIndex < bounds.rowEnd;
+
+    if (!inRect) continue;
+
+    const isOrigin = colIndex === bounds.colStart && timeIndex === bounds.rowStart;
+    if (isOrigin) {
+      if (!origin || bounds.colSpan * bounds.rowSpan > origin.colSpan * origin.rowSpan) {
+        origin = bounds;
+      }
+    } else if (!covered) {
+      covered = bounds;
+    }
+  }
+
+  if (origin) {
+    return {
+      kind: "origin",
+      session: origin.session,
+      rowSpan: origin.rowSpan,
+      colSpan: origin.colSpan,
+    };
+  }
+  if (covered) {
+    return { kind: "covered", session: covered.session };
+  }
+  return { kind: "empty" };
+}
+
+/**
+ * @deprecated Use resolveCellState — kept for compatibility
+ */
+export function findSession(sessions, { day, subColumn = 0, timeSlot, timeIndex, timeSlots, gymId = null, columns = null }) {
+  if (columns && timeIndex != null && timeSlots && gymId) {
+    const colIndex = columns.findIndex((c) => c.day === day && c.subColumn === subColumn);
+    if (colIndex < 0) return { session: null, isSpanContinuation: false };
+    const state = resolveCellState(sessions, columns, colIndex, timeIndex, timeSlots, gymId);
+    if (state.kind === "origin") return { session: state.session, isSpanContinuation: false };
+    if (state.kind === "covered") return { session: state.session, isSpanContinuation: true };
+    return { session: null, isSpanContinuation: false };
+  }
+
   const direct = sessions.find(
     (c) =>
       c.day === day &&
