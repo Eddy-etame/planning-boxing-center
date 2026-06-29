@@ -150,14 +150,18 @@ export default function CoachDashboard() {
   };
 
   const handleDownloadPersonalPoster = async () => {
-    const html2canvas = (await import("html2canvas")).default;
-    const poster = document.getElementById("personal-poster-container");
-    
-    const canvas = await html2canvas(poster, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
+    if (!session) return;
+    const coachSessions = getPersonalPlanning();
+    const container = createPosterContainer(
+      buildCoachPosterContainerHTML({
+        coachName: session.name,
+        sessions: coachSessions,
+        coachColors,
+        getGymName,
+      }),
+      "1100px"
+    );
+    const canvas = await capturePosterElement(container, 2);
 
     const link = document.createElement("a");
     link.download = `planning-coach-${session?.name}.png`;

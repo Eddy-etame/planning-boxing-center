@@ -51,7 +51,7 @@ async function captureCoachPosterCanvas(coach, sessions, coachColors, getGymName
       coachColors,
       getGymName,
     }),
-    "1000px"
+    "1100px"
   );
   return capturePosterElement(container, 2);
 }
