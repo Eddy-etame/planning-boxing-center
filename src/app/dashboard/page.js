@@ -267,27 +267,43 @@ export default function CoachDashboard() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Header bar - White background premium style */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Image
-              src="/logo-mark.png"
-              alt="Boxing Center Logo"
-              width={120}
-              height={56}
-              className="object-contain h-11 w-auto"
-            />
-            <div className="hidden sm:block h-6 w-px bg-slate-200" />
-            <h1 className="hidden sm:block text-sm font-black text-slate-900 uppercase tracking-widest">
-              Espace Coachs
-            </h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:h-20 lg:py-0 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          {/* Brand row (logo + avatar/logout on mobile) */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo-mark.png"
+                alt="Boxing Center Logo"
+                width={120}
+                height={56}
+                className="object-contain h-10 lg:h-11 w-auto"
+              />
+              <div className="hidden sm:block h-6 w-px bg-slate-200" />
+              <h1 className="hidden sm:block text-sm font-black text-slate-900 uppercase tracking-widest">
+                Espace Coachs
+              </h1>
+            </div>
+            <div className="flex items-center gap-2 lg:hidden">
+              <span className="h-8 w-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800 font-black text-xs">
+                {session?.name[0]}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-50 transition-all"
+                title="Déconnexion"
+              >
+                <LogOut size={20} />
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Period Switcher */}
-            <div className="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200">
+          {/* Controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Period Switcher — full width on mobile */}
+            <div className="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200 w-full lg:w-auto">
               <button
                 onClick={() => setPeriod("rentree-2026")}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
+                className={`flex-1 lg:flex-none px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
                   period === "rentree-2026"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-900"
@@ -297,7 +313,7 @@ export default function CoachDashboard() {
               </button>
               <button
                 onClick={() => setPeriod("ete-2026")}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
+                className={`flex-1 lg:flex-none px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
                   period === "ete-2026"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-900"
@@ -307,18 +323,18 @@ export default function CoachDashboard() {
               </button>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Identity + logout — desktop only (mobile lives in brand row) */}
+            <div className="hidden lg:flex items-center gap-2">
               <span className="h-8 w-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800 font-black text-xs">
                 {session?.name[0]}
               </span>
-              <span className="hidden md:block text-xs font-black text-slate-800 uppercase tracking-wider">
+              <span className="text-xs font-black text-slate-800 uppercase tracking-wider">
                 Coach {session?.name}
               </span>
             </div>
-
             <button
               onClick={handleLogout}
-              className="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-50 transition-all"
+              className="hidden lg:block p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-50 transition-all"
               title="Déconnexion"
             >
               <LogOut size={20} />
@@ -476,8 +492,9 @@ export default function CoachDashboard() {
         <div className="tab-contents">
           {activeTab === "my-schedule" && (
             <BlurFade duration={0.4} className="space-y-6">
-              {/* Personal planning image container (Sonia PDF format grid) */}
-              <div 
+              {/* Personal planning preview — fixed 1000px design; scrolls horizontally on small screens */}
+              <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 no-print">
+              <div
                 id="personal-poster-container"
                 className="bg-[#0A0D1A] flex flex-col border border-slate-900 shadow-2xl relative select-none shrink-0 print-page p-4 rounded-3xl"
                 style={{ width: "1000px", minHeight: "1000px" }}
@@ -585,6 +602,7 @@ export default function CoachDashboard() {
                     ))}
                   </div>
                 </div>
+              </div>
               </div>
             </BlurFade>
           )}

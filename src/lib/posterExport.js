@@ -73,6 +73,9 @@ function legendHtml(items) {
 
 const ACCES_LIBRE_HTML = `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;height:100%;min-height:52px;box-sizing:border-box;">accès libre</div>`;
 
+// Coach posters: an empty slot means the coach has no class — show "REPOS".
+const REPOS_HTML = `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;height:100%;min-height:52px;box-sizing:border-box;">repos</div>`;
+
 function classCellHtml(activity, sub, bgCol) {
   const ink = readableText(bgCol);
   return `
@@ -182,7 +185,7 @@ export function buildCoachPosterContainerHTML({ coachName, sessions, coachColors
       const dayCells = days
         .map((day) => {
           const course = sessions.find((c) => c.day === day && matchSlot(c.timeSlot, time) && c.activity !== "ACCES LIBRE");
-          if (!course) return ACCES_LIBRE_HTML;
+          if (!course) return REPOS_HTML;
           const salle = getGymName ? getGymName(course.salle) : course.salle;
           return classCellHtml(course.activity, salle, bgCol);
         })
