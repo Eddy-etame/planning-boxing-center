@@ -123,18 +123,32 @@ export function getSessionGridBounds(session, columns, timeSlots, gymId) {
   const normalized = normalizeSessionSpan(session, gymId);
   const colStart = getSessionColStart(normalized, columns);
   if (colStart < 0) return null;
-  const rowStart = timeSlots.findIndex((t) => matchTimeSlot(t, normalized.timeSlot));
+
+  const parts = normalized.timeSlot.split("-");
+  const startTime = parseTime(parts[0]);
+  const endTime = parts.length === 2 ? parseTime(parts[1]) : startTime + 60;
+
+  const rowStart = timeSlots.findIndex(t => {
+      const p = t.split("-");
+      return parseTime(p[0]) === startTime;
+  });
   if (rowStart < 0) return null;
+
+  let uiRowSpan = 1;
+  for (let i = rowStart + 1; i < timeSlots.length; i++) {
+    const tStart = parseTime(timeSlots[i].split("-")[0]);
+    if (tStart >= endTime) break;
+    uiRowSpan++;
+  }
   const colSpan = getEffectiveColSpan(normalized, columns, colStart);
-  const rowSpan = normalized.rowSpan || 1;
   return {
     session: normalized,
     colStart,
     rowStart,
     colSpan,
-    rowSpan,
+    rowSpan: uiRowSpan,
     colEnd: colStart + colSpan,
-    rowEnd: rowStart + rowSpan,
+    rowEnd: rowStart + uiRowSpan,
   };
 }
 
@@ -149,6 +163,16 @@ export function resolveCellState(sessions, columns, colIndex, timeIndex, timeSlo
   for (const raw of sessions) {
     const bounds = getSessionGridBounds(raw, columns, timeSlots, gymId);
     if (!bounds) continue;
+
+    // Detect if this bounds is overlapping with another session that starts LATER or is smaller, and if so, we should truncate it?
+    // Actually, HTML table breaking only happens if we emit a <td colSpan> and then LATER in the SAME row we emit another <td> that wasn't accounted for.
+    // The easiest way to fix HTML table overlap is:
+    // If we are covered by a previous rowSpan, we just DON'T emit the origin!
+    // But then the user doesn't see HYROX!
+    // So if HYROX is an origin, it MUST truncate the ACCES LIBRE's rowSpan!
+    // Wait, if ACCES LIBRE's rowSpan is truncated, it doesn't cover HYROX anymore.
+    // Since we evaluate cell by cell in ScheduleGrid, we can't retroactively truncate.
+    // Instead, we just let ScheduleGrid handle it, BUT we can cap `rowSpan` dynamically!
 
     const inRect =
       colIndex >= bounds.colStart &&
@@ -169,11 +193,42 @@ export function resolveCellState(sessions, columns, colIndex, timeIndex, timeSlo
   }
 
   if (origin) {
+    let safeRowSpan = origin.rowSpan;
+    let safeColSpan = origin.colSpan;
+
+    // Look ahead to check for collisions with other origins to prevent HTML table layout breaking
+    for (const raw of sessions) {
+      if (raw === origin.session) continue;
+      const other = getSessionGridBounds(raw, columns, timeSlots, gymId);
+      if (!other) continue;
+
+      // If the other session starts strictly after us, but within our rowSpan, and overlaps our columns
+      if (
+        other.rowStart > origin.rowStart &&
+        other.rowStart < origin.rowStart + safeRowSpan &&
+        other.colStart >= origin.colStart &&
+        other.colStart < origin.colStart + safeColSpan
+      ) {
+        // Truncate our rowSpan so we don't overlap the other origin!
+        safeRowSpan = other.rowStart - origin.rowStart;
+      }
+
+      // If the other session starts in the SAME row, but strictly after our colStart
+      if (
+        other.rowStart === origin.rowStart &&
+        other.colStart > origin.colStart &&
+        other.colStart < origin.colStart + safeColSpan
+      ) {
+        safeColSpan = other.colStart - origin.colStart;
+      }
+    }
+
     return {
       kind: "origin",
       session: origin.session,
-      rowSpan: origin.rowSpan,
-      colSpan: origin.colSpan,
+      rowSpan: safeRowSpan,
+      colSpan: safeColSpan,
+      style: { height: `${safeRowSpan * 4}rem` }
     };
   }
   if (covered) {
@@ -222,6 +277,16 @@ export function findSession(sessions, { day, subColumn = 0, timeSlot, timeIndex,
     }
   }
   return { session: null, isSpanContinuation: false };
+}
+
+/** Pick black or white text for legible contrast against a hex background. */
+export function readableText(hex) {
+  if (!hex || hex[0] !== "#" || hex.length < 7) return "#ffffff";
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.62 ? "#0A0D1A" : "#ffffff";
 }
 
 export function getDayLabel(day) {

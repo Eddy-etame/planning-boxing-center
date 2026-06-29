@@ -70,7 +70,7 @@ export default function LoginPage() {
               className="mb-4"
             >
               <Image
-                src="/logo.png"
+                src="/logo-light.png"
                 alt="Boxing Center Logo"
                 width={140}
                 height={70}

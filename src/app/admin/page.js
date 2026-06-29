@@ -426,8 +426,16 @@ export default function AdminDashboard() {
       statusDiv.innerHTML = `<div>${msg}</div><div style="margin-top:8px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden;"><div style="background:linear-gradient(90deg,#38BDF8,#818CF8);height:100%;width:${pct()}%;transition:width 0.3s;"></div></div><div style="margin-top:5px;color:#94A3B8;font-size:10px;">Progression: ${currentCount}/${totalCount} (${pct()}%)</div>`;
     };
 
+    // Start with a throwaway first page; each poster adds a page sized to its
+    // own aspect ratio (posters are content-height now, so no stretching).
     const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1200, 1000] });
-    let isFirstPage = true;
+
+    const addCanvasPage = (canvas, width) => {
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
+      const height = Math.round((width * canvas.height) / canvas.width);
+      pdf.addPage([width, height]);
+      pdf.addImage(imgData, "JPEG", 0, 0, width, height);
+    };
 
     for (const currentPeriod of allPeriods) {
       const periodLabel = currentPeriod === "rentree-2026" ? "Rentrée 2026" : "Été 2026";
@@ -438,11 +446,7 @@ export default function AdminDashboard() {
         const gymSessions = plannings.filter(c => c.salle === gym.id && c.period === currentPeriod);
         if (gymSessions.length === 0) continue;
         try {
-          const canvas = await captureGymPosterCanvas(gym, gymSessions, coachColors);
-          const imgData = canvas.toDataURL("image/jpeg", 0.9);
-          if (!isFirstPage) pdf.addPage([1200, 1000]);
-          else isFirstPage = false;
-          pdf.addImage(imgData, "JPEG", 0, 0, 1200, 1000);
+          addCanvasPage(await captureGymPosterCanvas(gym, gymSessions, coachColors), 1200);
         } catch (err) {
           console.error(err);
         }
@@ -458,11 +462,7 @@ export default function AdminDashboard() {
         });
         if (coachSessions.length === 0) continue;
         try {
-          const canvas = await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName);
-          const imgData = canvas.toDataURL("image/jpeg", 0.9);
-          if (!isFirstPage) pdf.addPage([1000, 1000]);
-          else isFirstPage = false;
-          pdf.addImage(imgData, "JPEG", 0, 0, 1000, 1000);
+          addCanvasPage(await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName), 1100);
         } catch (err) {
           console.error(err);
         }
@@ -470,6 +470,7 @@ export default function AdminDashboard() {
     }
 
     updateStatus("📦 Finalisation du PDF...");
+    pdf.deletePage(1); // remove the initial blank page
     pdf.save("plannings-boxing-center-tous.pdf");
     document.body.removeChild(statusDiv);
     alert("✅ Le document PDF unique a été généré et téléchargé avec succès !");
@@ -515,11 +516,11 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Image
-              src="/logo.png"
+              src="/logo-mark.png"
               alt="Boxing Center Logo"
-              width={100}
-              height={50}
-              className="object-contain"
+              width={120}
+              height={56}
+              className="object-contain h-11 w-auto"
             />
             <div className="hidden sm:block h-6 w-px bg-slate-200" />
             <h1 className="hidden sm:block text-sm font-black text-slate-900 uppercase tracking-widest">

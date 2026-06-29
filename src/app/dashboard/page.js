@@ -13,6 +13,8 @@ import { BlurFade } from "@/components/magicui/BlurFade";
 import { Marquee } from "@/components/magicui/Marquee";
 import { triggerLocalNotification } from "@/components/PWARegister";
 import ScheduleGrid from "@/components/ScheduleGrid";
+import { readableText } from "@/lib/scheduleGrid";
+import { buildCoachPosterContainerHTML, createPosterContainer, capturePosterElement } from "@/lib/posterExport";
 import { loadPlanningsFromStorage } from "@/lib/planningStorage";
 
 export default function CoachDashboard() {
@@ -264,11 +266,11 @@ export default function CoachDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Image
-              src="/logo.png"
+              src="/logo-mark.png"
               alt="Boxing Center Logo"
-              width={100}
-              height={50}
-              className="object-contain"
+              width={120}
+              height={56}
+              className="object-contain h-11 w-auto"
             />
             <div className="hidden sm:block h-6 w-px bg-slate-200" />
             <h1 className="hidden sm:block text-sm font-black text-slate-900 uppercase tracking-widest">
@@ -493,7 +495,7 @@ export default function CoachDashboard() {
                   <div className="absolute inset-0 p-8 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <span className="text-xl font-black tracking-widest text-white/90">2026-2027</span>
-                      <img src="/logo-light.png" alt="Boxing Center Logo" style={{ height: "65px", objectFit: "contain" }} />
+                      <img src="/logo-white.png" alt="Boxing Center Logo" style={{ height: "60px", objectFit: "contain" }} />
                     </div>
                     <h2 className="text-4xl font-extrabold text-white text-center tracking-[0.08em] uppercase mb-2">
                       COACH {session?.name ? session.name.toUpperCase() : "MON PLANNING"}
@@ -539,9 +541,9 @@ export default function CoachDashboard() {
 
                           if (!course) {
                             return (
-                              <div 
-                                key={day} 
-                                className="bg-[#0E1222]/40 border border-slate-900/60 rounded-lg flex items-center justify-center text-[10px] text-white/10 font-black uppercase tracking-wider text-center px-1"
+                              <div
+                                key={day}
+                                className="bg-white/[0.03] border border-white/5 rounded-lg flex items-center justify-center text-[9px] text-white/30 font-bold uppercase tracking-[0.15em] text-center px-1"
                               >
                                 accès libre
                               </div>
@@ -549,17 +551,18 @@ export default function CoachDashboard() {
                           }
 
                           const bgCol = coachColors[session?.name.toUpperCase()] || "#475569";
+                          const ink = readableText(bgCol);
 
                           return (
                             <div
                               key={day}
-                              className="border border-slate-950 rounded-lg flex flex-col items-center justify-center p-1.5 text-center transition-transform hover:scale-[1.02] shadow-md shadow-black/10 select-none h-full relative"
-                              style={{ backgroundColor: bgCol }}
+                              className="rounded-lg flex flex-col items-center justify-center p-1.5 text-center transition-transform hover:scale-[1.02] shadow-md shadow-black/10 select-none h-full relative ring-1 ring-black/10"
+                              style={{ background: `linear-gradient(160deg, ${bgCol} 0%, ${bgCol}e6 100%)`, color: ink }}
                             >
-                              <span className="text-[10px] font-black text-white uppercase tracking-wider leading-tight max-w-full break-words">
+                              <span className="text-[10px] font-black uppercase tracking-wider leading-tight max-w-full break-words">
                                 {course.activity}
                               </span>
-                              <span className="text-[8px] font-bold text-white/70 uppercase tracking-widest mt-1">
+                              <span className="text-[8px] font-bold uppercase tracking-widest mt-1" style={{ color: ink, opacity: 0.72 }}>
                                 {course.salle.replace("saint-cyprien", "ST CYPRIEN").replace("ramonville", "RAMONVILLE").toUpperCase()}
                               </span>
 

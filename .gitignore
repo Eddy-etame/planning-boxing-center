@@ -40,5 +40,10 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# scratch / debug dumps
+_*.txt
+*.OLD.js
+debug_*
+
 # User reference images
 /images/
