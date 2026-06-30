@@ -410,7 +410,7 @@ export default function AdminDashboard() {
     const activeGyms = gyms;
     const activeCoaches = allCoaches;
 
-    const confirmDownload = confirm("Voulez-vous générer un fichier PDF unique regroupant tous les visuels (salles + coachs) ?");
+    const confirmDownload = confirm("Voulez-vous télécharger chaque planning (salles + coachs) dans un fichier PDF séparé ? Cela va lancer plusieurs téléchargements.");
     if (!confirmDownload) return;
 
     const statusDiv = document.createElement("div");
@@ -426,15 +426,20 @@ export default function AdminDashboard() {
       statusDiv.innerHTML = `<div>${msg}</div><div style="margin-top:8px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden;"><div style="background:linear-gradient(90deg,#38BDF8,#818CF8);height:100%;width:${pct()}%;transition:width 0.3s;"></div></div><div style="margin-top:5px;color:#94A3B8;font-size:10px;">Progression: ${currentCount}/${totalCount} (${pct()}%)</div>`;
     };
 
-    // Start with a throwaway first page; each poster adds a page sized to its
-    // own aspect ratio (posters are content-height now, so no stretching).
-    const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1200, 1000] });
-
-    const addCanvasPage = (canvas, width) => {
+    // Each flyer becomes its OWN single-page PDF, sized to its poster's aspect
+    // ratio, then downloaded separately (one file per salle / coach / period).
+    let savedCount = 0;
+    const saveCanvasAsPdf = (canvas, width, filename) => {
       const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const height = Math.round((width * canvas.height) / canvas.width);
-      pdf.addPage([width, height]);
-      pdf.addImage(imgData, "JPEG", 0, 0, width, height);
+      const doc = new jsPDF({
+        orientation: height > width ? "portrait" : "landscape",
+        unit: "px",
+        format: [width, height],
+      });
+      doc.addImage(imgData, "JPEG", 0, 0, width, height);
+      doc.save(filename);
+      savedCount++;
     };
 
     for (const currentPeriod of allPeriods) {
@@ -442,11 +447,13 @@ export default function AdminDashboard() {
 
       for (const gym of activeGyms) {
         currentCount++;
-        updateStatus(`📍 ${periodLabel} — Ajout de la Salle: ${gym.name} au PDF...`);
+        updateStatus(`📍 ${periodLabel} — Salle: ${gym.name} (PDF)...`);
         const gymSessions = plannings.filter(c => c.salle === gym.id && c.period === currentPeriod);
         if (gymSessions.length === 0) continue;
         try {
-          addCanvasPage(await captureGymPosterCanvas(gym, gymSessions, coachColors), 1200);
+          const canvas = await captureGymPosterCanvas(gym, gymSessions, coachColors);
+          saveCanvasAsPdf(canvas, 1200, `planning-salle-${gym.id}-${currentPeriod}.pdf`);
+          await new Promise(r => setTimeout(r, 150)); // let the browser flush each download
         } catch (err) {
           console.error(err);
         }
@@ -454,7 +461,7 @@ export default function AdminDashboard() {
 
       for (const coach of activeCoaches) {
         currentCount++;
-        updateStatus(`🥊 ${periodLabel} — Ajout du Coach: ${coach} au PDF...`);
+        updateStatus(`🥊 ${periodLabel} — Coach: ${coach} (PDF)...`);
         const coachSessions = plannings.filter(c => {
           const cn = c.coach.toUpperCase();
           const target = coach.toUpperCase();
@@ -462,18 +469,17 @@ export default function AdminDashboard() {
         });
         if (coachSessions.length === 0) continue;
         try {
-          addCanvasPage(await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName), 1100);
+          const canvas = await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName);
+          saveCanvasAsPdf(canvas, 1100, `planning-coach-${coach.toLowerCase()}-${currentPeriod}.pdf`);
+          await new Promise(r => setTimeout(r, 150));
         } catch (err) {
           console.error(err);
         }
       }
     }
 
-    updateStatus("📦 Finalisation du PDF...");
-    pdf.deletePage(1); // remove the initial blank page
-    pdf.save("plannings-boxing-center-tous.pdf");
     document.body.removeChild(statusDiv);
-    alert("✅ Le document PDF unique a été généré et téléchargé avec succès !");
+    alert(`✅ ${savedCount} plannings ont été téléchargés séparément en PDF avec succès !`);
   };
 
   const getGymName = (gymId) => {
@@ -587,10 +593,10 @@ export default function AdminDashboard() {
               <button
                 onClick={handleDownloadAllPDF}
                 className="px-3.5 py-2.5 bg-rose-600 hover:bg-rose-550 text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-md shadow-rose-600/10"
-                title="Générer et télécharger un fichier PDF contenant toutes les pages de planning"
+                title="Télécharger chaque planning (salle / coach) dans un fichier PDF séparé"
               >
                 <FileText size={14} className="shrink-0" />
-                <span className="hidden lg:inline">Télécharger PDF</span>
+                <span className="hidden lg:inline">PDF (séparés)</span>
               </button>
 
               <button
