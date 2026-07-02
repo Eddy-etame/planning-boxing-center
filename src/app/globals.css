@@ -85,22 +85,39 @@ body {
   animation-direction: reverse;
 }
 
-/* Print Overrides */
+/* Print Overrides — preserve the full-colour poster design when printing.
+   Browsers strip background colours/images unless print-color-adjust is exact,
+   which is why the poster used to print blank / "like before". */
 @media print {
-  body {
-    background: white;
-    color: black;
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  .no-print {
-    display: none !important;
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
   }
-  .print-page {
-    width: 297mm;
-    height: 210mm;
-    margin: 0;
-    padding: 0;
-    page-break-after: always;
+  .no-print { display: none !important; }
+
+  /* On a poster page, print ONLY the poster — at full size and full colour. */
+  body:has(#poster-container) *,
+  body:has(#personal-poster-container) * { visibility: hidden !important; }
+  #poster-container, #poster-container *,
+  #personal-poster-container, #personal-poster-container * { visibility: visible !important; }
+  #poster-container, #personal-poster-container {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    zoom: 1 !important;
+    transform: none !important;
   }
+
+  /* Large custom page so the whole 1200px poster lands on ONE page; the
+     printer then scales this to the physical paper (A4, etc.). */
+  @page { size: 330mm 300mm; margin: 6mm; }
 }
 
 /* ===== PWA & RESPONSIVE STYLES ===== */
@@ -191,16 +208,20 @@ body {
   animation: pulse-badge 2s infinite;
 }
 
-/* Responsive poster scaling on small screens */
-@media (max-width: 1080px) {
-  #poster-container {
-    transform-origin: top left;
-    transform: scale(0.65);
-  }
+/* Responsive poster preview. `zoom` reflows the layout (unlike transform:scale)
+   so the fixed-width flyer shrinks to fit with NO empty space around it. */
+#poster-container, #personal-poster-container {
+  transform-origin: top center;
 }
-
-@media (max-width: 640px) {
-  #poster-container {
-    transform: scale(0.38);
-  }
+@media (max-width: 1280px) {
+  #poster-container, #personal-poster-container { zoom: 0.9; }
+}
+@media (max-width: 1024px) {
+  #poster-container, #personal-poster-container { zoom: 0.68; }
+}
+@media (max-width: 768px) {
+  #poster-container, #personal-poster-container { zoom: 0.5; }
+}
+@media (max-width: 480px) {
+  #poster-container, #personal-poster-container { zoom: 0.3; }
 }
