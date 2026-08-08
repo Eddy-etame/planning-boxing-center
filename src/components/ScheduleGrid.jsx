@@ -11,6 +11,7 @@ import {
   parseTime,
   readableText,
   resolveCellState,
+  construireMatrice,
 } from "@/lib/scheduleGrid";
 
 export default function ScheduleGrid({
@@ -26,6 +27,11 @@ export default function ScheduleGrid({
   const timeSlots = getTimeSlotsForSessions(sessions);
   const columns = buildColumnDescriptors(gymId);
   const dayGroups = buildDayHeaderGroups(columns);
+  /* La grille se resout UNE fois, sur une matrice, et non case par case :
+     c'est ce qui garantit qu'aucune ligne ne s'arrete avant le bord droit.
+     Mesure avant correctif sur le planning des Minimes : quatre lignes sur
+     treize etaient courtes, dont une a 968 pixels du bout. */
+  const matrice = construireMatrice(sessions, columns, timeSlots, gymId);
   const showSubHeader = hasMultipleSubColumns(gymId);
 
   // Mobile (below md): a per-day list is far more readable than a 900px table
@@ -243,7 +249,7 @@ export default function ScheduleGrid({
             <tr key={time} className={rowHeight}>
               <td className={timeTdClass}>{time}</td>
               {columns.map((col) => {
-                const state = resolveCellState(sessions, columns, col.colIndex, timeIndex, timeSlots, gymId);
+                const state = matrice[timeIndex][col.colIndex];
                 if (state.kind === "covered") return null;
 
                 const rowSpan = state.kind === "origin" ? state.rowSpan : 1;

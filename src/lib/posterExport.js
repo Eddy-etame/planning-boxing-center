@@ -6,6 +6,7 @@ import {
   hasMultipleSubColumns,
   readableText,
   resolveCellState,
+  construireMatrice,
 } from "./scheduleGrid";
 
 // ---------------------------------------------------------------------------
@@ -134,7 +135,17 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
     "background:#0c1326;border:1px solid " + INK_DARK + ";text-align:center;padding:12px 4px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);width:96px;";
   const timeStyle =
     "background:#0c1326;border:1px solid " + INK_DARK + ";font-size:10px;font-weight:900;color:rgba(255,255,255,0.72);text-align:center;padding:8px 4px;vertical-align:middle;width:96px;";
-  const tdStyle = "padding:4px;vertical-align:middle;";
+  /* `height:1px` : la cellule s'etire de toute facon a la hauteur de sa
+     rangee, mais sans cette declaration le `height:100%` du bloc colore
+     n'a aucune reference et retombe sur son min-height — une bande sur
+     deux rangees laissait 72 px de vide sous sa couleur (mesure). */
+  const tdStyle = "padding:4px;vertical-align:middle;height:1px;";
+
+  /* La grille se resout UNE fois, sur une matrice, et non case par case :
+     c'est ce qui garantit qu'aucune ligne de l'affiche ne s'arrete avant le
+     bord droit. Mesure avant correctif (Minimes) : quatre lignes courtes
+     sur treize, dont une a 968 px du bout. */
+  const matrice = construireMatrice(sessions, columns, timeSlots, gymId);
 
   let headerRows = `<tr>
     <th style="${timeHeadStyle}" rowspan="${showSubHeader ? 2 : 1}">Horaire</th>
@@ -154,7 +165,7 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
     .map((time, timeIndex) => {
       const cells = [`<td style="${timeStyle}">${escapeHtml(time)}</td>`];
       for (const col of columns) {
-        const state = resolveCellState(sessions, columns, col.colIndex, timeIndex, timeSlots, gymId);
+        const state = matrice[timeIndex][col.colIndex];
         if (state.kind === "covered") continue;
         const rowSpan = state.kind === "origin" && state.rowSpan > 1 ? ` rowspan="${state.rowSpan}"` : "";
         const colSpan = state.kind === "origin" && state.colSpan > 1 ? ` colspan="${state.colSpan}"` : "";

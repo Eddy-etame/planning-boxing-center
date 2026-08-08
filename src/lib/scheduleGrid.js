@@ -119,8 +119,45 @@ export function getEffectiveColSpan(session, columns, colStart) {
   return Math.max(1, count);
 }
 
-export function getSessionGridBounds(session, columns, timeSlots, gymId) {
-  const normalized = normalizeSessionSpan(session, gymId);
+/** Deux plages horaires se chevauchent-elles ? (bornes en minutes) */
+function chevauche(a, b) {
+  const bornes = (t) => {
+    const p = (t || "").split("-");
+    const d = parseTime(p[0]);
+    return [d, p.length === 2 ? parseTime(p[1]) : d + 60];
+  };
+  const [d1, f1] = bornes(a);
+  const [d2, f2] = bornes(b);
+  return d1 < f2 && d2 < f1;
+}
+
+/**
+ * Une case SEULE dans sa plage doit remplir sa journee.
+ *
+ * Sur une journee a plusieurs sous-colonnes, une activite sans voisine
+ * restait dans sa demi-colonne et laissait un trou. On n'elargit QUE s'il
+ * n'existe aucune autre seance du meme jour dont la plage chevauche la
+ * sienne : s'il y a une voisine, c'est elle qui occupe le reste.
+ */
+function elargirSiSeule(session, gymId, sessions) {
+  if (!sessions || !sessions.length) return session;
+  const total = getDaySubColumnCount(gymId, session.day);
+  if (total <= 1) return session;
+  const dejaPleine = (session.colSpan || 1) >= total;
+  if (dejaPleine) return session;
+  const voisine = sessions.some(
+    (a) =>
+      a !== session &&
+      a.day === session.day &&
+      (a.period === undefined || a.period === session.period) &&
+      chevauche(a.timeSlot, session.timeSlot)
+  );
+  if (voisine) return session;
+  return { ...session, subColumn: 0, colSpan: total };
+}
+
+export function getSessionGridBounds(session, columns, timeSlots, gymId, sessions = null) {
+  const normalized = normalizeSessionSpan(elargirSiSeule(session, gymId, sessions), gymId);
   const colStart = getSessionColStart(normalized, columns);
   if (colStart < 0) return null;
 
@@ -156,12 +193,75 @@ export function getSessionGridBounds(session, columns, timeSlots, gymId) {
  * Resolve what to render at grid position (colIndex, timeIndex).
  * Returns { kind: 'origin'|'covered'|'empty', session?, rowSpan?, colSpan? }
  */
+/**
+ * LA MATRICE D'OCCUPATION — la grille resolue une fois pour toutes.
+ *
+ * Chaque case du tableau recoit exactement un etat : `origin` (une seance
+ * commence ici), `covered` (une seance venue d'au-dessus ou de gauche
+ * l'occupe) ou `empty` (rien, et c'est une information : la salle est
+ * fermee ou libre a cette heure-la).
+ *
+ * On pose les seances de la plus grande a la plus petite, et chacune ne
+ * prend que les cases ENCORE libres : une bande d'acces libre ne peut plus
+ * avaler un cours qui tombe dedans, et un cours ne peut plus laisser un
+ * trou en repoussant la bande. C'est ce croisement, resolu case par case
+ * et sans memoire, qui laissait des lignes plus courtes que le tableau.
+ */
+export function construireMatrice(sessions, columns, timeSlots, gymId) {
+  const L = timeSlots.length;
+  const C = columns.length;
+  const cases = Array.from({ length: L }, () => Array.from({ length: C }, () => ({ kind: "empty" })));
+
+  const boites = sessions
+    .map((s) => getSessionGridBounds(s, columns, timeSlots, gymId, sessions))
+    .filter(Boolean)
+    /* Les plus grandes d'abord : une bande de quatre heures pose son
+       territoire, les cours qui tombent dedans prennent ce qui reste. */
+    .sort((a, b) => b.colSpan * b.rowSpan - a.colSpan * a.rowSpan);
+
+  for (const b of boites) {
+    /* On rabote a ce qui est REELLEMENT libre, en partant du coin haut
+       gauche : autant de lignes et de colonnes qu'on peut prendre sans
+       marcher sur une case deja prise. */
+    let lignes = 0;
+    for (let r = b.rowStart; r < Math.min(L, b.rowStart + b.rowSpan); r++) {
+      let libre = true;
+      for (let c = b.colStart; c < Math.min(C, b.colStart + b.colSpan); c++) {
+        if (cases[r][c].kind !== "empty") { libre = false; break; }
+      }
+      if (!libre) break;
+      lignes++;
+    }
+    if (lignes === 0) continue;   // entierement recouverte : on ne la rend pas deux fois
+
+    let colonnes = 0;
+    for (let c = b.colStart; c < Math.min(C, b.colStart + b.colSpan); c++) {
+      let libre = true;
+      for (let r = b.rowStart; r < b.rowStart + lignes; r++) {
+        if (cases[r][c].kind !== "empty") { libre = false; break; }
+      }
+      if (!libre) break;
+      colonnes++;
+    }
+    if (colonnes === 0) continue;
+
+    for (let r = b.rowStart; r < b.rowStart + lignes; r++) {
+      for (let c = b.colStart; c < b.colStart + colonnes; c++) {
+        cases[r][c] = r === b.rowStart && c === b.colStart
+          ? { kind: "origin", session: b.session, rowSpan: lignes, colSpan: colonnes }
+          : { kind: "covered" };
+      }
+    }
+  }
+  return cases;
+}
+
 export function resolveCellState(sessions, columns, colIndex, timeIndex, timeSlots, gymId) {
   let origin = null;
   let covered = null;
 
   for (const raw of sessions) {
-    const bounds = getSessionGridBounds(raw, columns, timeSlots, gymId);
+    const bounds = getSessionGridBounds(raw, columns, timeSlots, gymId, sessions);
     if (!bounds) continue;
 
     // Detect if this bounds is overlapping with another session that starts LATER or is smaller, and if so, we should truncate it?

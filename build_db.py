@@ -523,6 +523,23 @@ def write_js(sessions, configs):
             f"    coach: \"{s['coach']}\"{extra}\n  }},\n"
         )
 
+    # ------------------------------------------------------------------
+    # VERITE PDF (regle du client, 2026-08-07) : les PDF de
+    # boxing-center-portet/public/img sont LA seule source de verite.
+    # Deux points ou les ODS divergent des PDF — corriges ici, documentes :
+    #   1. Portet salle boxe : PAS de Baby Boxe le mercredi (samedi uniquement).
+    #   2. Saint-Cyprien samedi soir : BOXE PIEDS POINGS 18h-20h (pas Anglaise).
+    # ------------------------------------------------------------------
+    before = len(sessions)
+    sessions = [s for s in sessions if not (
+        s["salle"] == "portet-combat" and s["day"] == "mercredi" and "BABY" in s["activity"]
+    )]
+    for s in sessions:
+        if s["salle"] == "saint-cyprien" and s["day"] == "samedi" and s["timeSlot"].startswith("18h") and s["activity"] == "ANGLAISE":
+            s["activity"] = "BOXE PIEDS POINGS"
+            s["timeSlot"] = "18h-20h"
+    print(f"  verite PDF appliquee ({before - len(sessions)} retrait, 1 bascule)")
+
     template_path = os.path.join(SCRIPT_DIR, "data_tables.json")
     with open(template_path, "r", encoding="utf-8") as f:
         tables = json.load(f)
