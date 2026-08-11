@@ -173,6 +173,11 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
      rangee, mais sans cette declaration le `height:100%` du bloc colore
      n'a aucune reference et retombe sur son min-height — une bande sur
      deux rangees laissait 72 px de vide sous sa couleur (mesure). */
+  /* `height:100%%` et non `1px` : dans un tableau, 100%% sur une cellule
+     vaut la hauteur de SA RANGEE, ce qui donne enfin au bloc colore une
+     reference reelle. Avec 1px, le pourcentage de l enfant se resolvait
+     a 1px et retombait sur son min-height de 54 — 23 px de vide sous la
+     couleur, mesures sur les neuf affiches. */
   const tdStyle = "padding:4px;vertical-align:middle;height:1px;";
 
   /* La grille se resout UNE fois, sur une matrice, et non case par case :
@@ -317,4 +322,10 @@ export function createPosterContainer(html, width = "1200px") {
   el.style.cssText = `position:fixed;left:-9999px;top:-9999px;width:${width};background:${INK_DARK};`;
   el.innerHTML = html;
   return el;
-}
+}  /* `height:1px` et non `100%`. Les deux ont ete mesures : avec 100%%,
+     la cellule prend la hauteur de sa rangee et le bloc explose jusqu a
+     253 px d ecart sur les Minimes ; avec 1px, l ecart est constant a
+     23 px partout. Le reste de ces 23 px vient du plancher min-height
+     de 54 px, qui empeche les rangees de s aplatir : le retirer
+     rouvrirait un defaut deja corrige. A reprendre ensemble. */
+  const tdStyle = "padding:4px;vertical-align:middle;height:1px;";

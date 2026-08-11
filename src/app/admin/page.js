@@ -51,7 +51,7 @@ async function captureCoachPosterCanvas(coach, sessions, coachColors, getGymName
       coachColors,
       getGymName,
     }),
-    "1100px"
+    "1000px"
   );
   return capturePosterElement(container, 2);
 }
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
     const activeGyms = gyms;
     const activeCoaches = allCoaches;
 
-    const confirmDownload = confirm("Voulez-vous télécharger chaque planning (salles + coachs) dans un fichier PDF séparé ? Cela va lancer plusieurs téléchargements.");
+    const confirmDownload = confirm("Voulez-vous générer un fichier PDF unique regroupant tous les visuels (salles + coachs) ?");
     if (!confirmDownload) return;
 
     const statusDiv = document.createElement("div");
@@ -426,34 +426,23 @@ export default function AdminDashboard() {
       statusDiv.innerHTML = `<div>${msg}</div><div style="margin-top:8px;background:#1e293b;border-radius:8px;height:6px;overflow:hidden;"><div style="background:linear-gradient(90deg,#38BDF8,#818CF8);height:100%;width:${pct()}%;transition:width 0.3s;"></div></div><div style="margin-top:5px;color:#94A3B8;font-size:10px;">Progression: ${currentCount}/${totalCount} (${pct()}%)</div>`;
     };
 
-    // Each flyer becomes its OWN single-page PDF, sized to its poster's aspect
-    // ratio, then downloaded separately (one file per salle / coach / period).
-    let savedCount = 0;
-    const saveCanvasAsPdf = (canvas, width, filename) => {
-      const imgData = canvas.toDataURL("image/jpeg", 0.92);
-      const height = Math.round((width * canvas.height) / canvas.width);
-      const doc = new jsPDF({
-        orientation: height > width ? "portrait" : "landscape",
-        unit: "px",
-        format: [width, height],
-      });
-      doc.addImage(imgData, "JPEG", 0, 0, width, height);
-      doc.save(filename);
-      savedCount++;
-    };
+    const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1200, 1000] });
+    let isFirstPage = true;
 
     for (const currentPeriod of allPeriods) {
       const periodLabel = currentPeriod === "rentree-2026" ? "Rentrée 2026" : "Été 2026";
 
       for (const gym of activeGyms) {
         currentCount++;
-        updateStatus(`📍 ${periodLabel} — Salle: ${gym.name} (PDF)...`);
+        updateStatus(`📍 ${periodLabel} — Ajout de la Salle: ${gym.name} au PDF...`);
         const gymSessions = plannings.filter(c => c.salle === gym.id && c.period === currentPeriod);
         if (gymSessions.length === 0) continue;
         try {
           const canvas = await captureGymPosterCanvas(gym, gymSessions, coachColors);
-          saveCanvasAsPdf(canvas, 1200, `planning-salle-${gym.id}-${currentPeriod}.pdf`);
-          await new Promise(r => setTimeout(r, 150)); // let the browser flush each download
+          const imgData = canvas.toDataURL("image/jpeg", 0.9);
+          if (!isFirstPage) pdf.addPage([1200, 1000]);
+          else isFirstPage = false;
+          pdf.addImage(imgData, "JPEG", 0, 0, 1200, 1000);
         } catch (err) {
           console.error(err);
         }
@@ -461,7 +450,7 @@ export default function AdminDashboard() {
 
       for (const coach of activeCoaches) {
         currentCount++;
-        updateStatus(`🥊 ${periodLabel} — Coach: ${coach} (PDF)...`);
+        updateStatus(`🥊 ${periodLabel} — Ajout du Coach: ${coach} au PDF...`);
         const coachSessions = plannings.filter(c => {
           const cn = c.coach.toUpperCase();
           const target = coach.toUpperCase();
@@ -470,16 +459,20 @@ export default function AdminDashboard() {
         if (coachSessions.length === 0) continue;
         try {
           const canvas = await captureCoachPosterCanvas(coach, coachSessions, coachColors, getGymName);
-          saveCanvasAsPdf(canvas, 1100, `planning-coach-${coach.toLowerCase()}-${currentPeriod}.pdf`);
-          await new Promise(r => setTimeout(r, 150));
+          const imgData = canvas.toDataURL("image/jpeg", 0.9);
+          if (!isFirstPage) pdf.addPage([1000, 1000]);
+          else isFirstPage = false;
+          pdf.addImage(imgData, "JPEG", 0, 0, 1000, 1000);
         } catch (err) {
           console.error(err);
         }
       }
     }
 
+    updateStatus("📦 Finalisation du PDF...");
+    pdf.save("plannings-boxing-center-tous.pdf");
     document.body.removeChild(statusDiv);
-    alert(`✅ ${savedCount} plannings ont été téléchargés séparément en PDF avec succès !`);
+    alert("✅ Le document PDF unique a été généré et téléchargé avec succès !");
   };
 
   const getGymName = (gymId) => {
@@ -519,38 +512,27 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header bar */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:h-20 lg:py-0 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-          {/* Brand row (logo + mobile logout) */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo-mark.png"
-                alt="Boxing Center Logo"
-                width={120}
-                height={56}
-                className="object-contain h-10 lg:h-11 w-auto"
-              />
-              <div className="hidden sm:block h-6 w-px bg-slate-200" />
-              <h1 className="hidden sm:block text-sm font-black text-slate-900 uppercase tracking-widest">
-                Administration
-              </h1>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="lg:hidden p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-50 transition-all"
-              title="Déconnexion"
-            >
-              <LogOut size={20} />
-            </button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Image
+              src="/logo.png"
+              alt="Boxing Center Logo"
+              width={100}
+              height={50}
+              className="object-contain"
+            />
+            <div className="hidden sm:block h-6 w-px bg-slate-200" />
+            <h1 className="hidden sm:block text-sm font-black text-slate-900 uppercase tracking-widest">
+              Administration
+            </h1>
           </div>
 
-          {/* Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-4">
             {/* Period Switcher */}
-            <div className="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200 w-full sm:w-auto">
+            <div className="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200">
               <button
                 onClick={() => setPeriod("rentree-2026")}
-                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
                   period === "rentree-2026"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-900"
@@ -560,7 +542,7 @@ export default function AdminDashboard() {
               </button>
               <button
                 onClick={() => setPeriod("ete-2026")}
-                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
                   period === "ete-2026"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-900"
@@ -570,53 +552,49 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            {/* Action buttons — even grid on mobile, inline on desktop */}
-            <div className="grid grid-cols-4 sm:flex sm:items-center gap-2 sm:gap-3">
-              <button
-                onClick={handleDownloadAllVisuals}
-                className="px-3.5 py-2.5 bg-amber-500 hover:bg-amber-450 text-slate-950 rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-md shadow-amber-500/10"
-                title="Télécharger tous les plannings compressés dans un fichier ZIP"
-              >
-                <FileArchive size={14} className="shrink-0" />
-                <span className="hidden lg:inline">Télécharger ZIP</span>
-              </button>
+            <button
+              onClick={handleDownloadAllVisuals}
+              className="px-3.5 py-2.5 bg-amber-500 hover:bg-amber-450 text-slate-950 rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/10"
+              title="Télécharger tous les plannings compressés dans un fichier ZIP"
+            >
+              <FileArchive size={11} />
+              <span>Télécharger ZIP</span>
+            </button>
 
-              <button
-                onClick={handleDownloadAllSeparately}
-                className="px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-550 text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/10"
-                title="Télécharger toutes les images PNG individuellement"
-              >
-                <FileImage size={14} className="shrink-0" />
-                <span className="hidden lg:inline">Séparément (PNG)</span>
-              </button>
+            <button
+              onClick={handleDownloadAllSeparately}
+              className="px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-550 text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/10"
+              title="Télécharger toutes les images PNG individuellement"
+            >
+              <FileImage size={11} />
+              <span>Séparément (PNG)</span>
+            </button>
 
-              <button
-                onClick={handleDownloadAllPDF}
-                className="px-3.5 py-2.5 bg-rose-600 hover:bg-rose-550 text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-md shadow-rose-600/10"
-                title="Télécharger chaque planning (salle / coach) dans un fichier PDF séparé"
-              >
-                <FileText size={14} className="shrink-0" />
-                <span className="hidden lg:inline">PDF (séparés)</span>
-              </button>
+            <button
+              onClick={handleDownloadAllPDF}
+              className="px-3.5 py-2.5 bg-rose-600 hover:bg-rose-550 text-white rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-rose-600/10"
+              title="Générer et télécharger un fichier PDF contenant toutes les pages de planning"
+            >
+              <FileText size={11} />
+              <span>Télécharger PDF</span>
+            </button>
 
-              <button
-                onClick={handlePublish}
-                disabled={isPublishing}
-                className="shiny-btn px-3.5 py-2.5 bg-slate-900 text-white rounded-xl text-[9px] lg:text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-md shadow-slate-900/10"
-              >
-                {isPublishing ? (
-                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Share2 size={14} className="shrink-0" />
-                )}
-                <span className="hidden lg:inline">Diffuser</span>
-              </button>
-            </div>
+            <button
+              onClick={handlePublish}
+              disabled={isPublishing}
+              className="shiny-btn px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-slate-900/10"
+            >
+              {isPublishing ? (
+                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Share2 size={12} />
+              )}
+              <span>Diffuser</span>
+            </button>
 
-            {/* Logout — desktop only (mobile lives in brand row) */}
             <button
               onClick={handleLogout}
-              className="hidden lg:block p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-50 transition-all"
+              className="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-50 transition-all"
               title="Déconnexion"
             >
               <LogOut size={20} />
@@ -709,12 +687,12 @@ export default function AdminDashboard() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
                     {/* View mode toggle */}
-                    <div className="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200 w-full sm:w-auto">
+                    <div className="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200">
                       <button
                         onClick={() => setViewMode("grid")}
-                        className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all duration-200 ${
+                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all duration-200 ${
                           viewMode === "grid"
                             ? "bg-white text-slate-900 shadow-sm"
                             : "text-slate-500 hover:text-slate-900"
@@ -724,7 +702,7 @@ export default function AdminDashboard() {
                       </button>
                       <button
                         onClick={() => setViewMode("list")}
-                        className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all duration-200 ${
+                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all duration-200 ${
                           viewMode === "list"
                             ? "bg-white text-slate-900 shadow-sm"
                             : "text-slate-500 hover:text-slate-900"
@@ -734,21 +712,19 @@ export default function AdminDashboard() {
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3">
-                      <button
-                        onClick={() => setShowAddClassModal(true)}
-                        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-md shadow-slate-900/10"
-                      >
-                        <Plus size={14} className="shrink-0" />
-                        <span>Ajouter un cours</span>
-                      </button>
-                      <button
-                        onClick={() => router.push(`/poster/${selectedGym}`)}
-                        className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all"
-                      >
-                        <span>Visualiser Poster</span>
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setShowAddClassModal(true)}
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-slate-900/10"
+                    >
+                      <Plus size={14} />
+                      <span>Ajouter un cours</span>
+                    </button>
+                    <button 
+                      onClick={() => router.push(`/poster/${selectedGym}`)}
+                      className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      <span>Visualiser Poster</span>
+                    </button>
                   </div>
                 </div>
 
