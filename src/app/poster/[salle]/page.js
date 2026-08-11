@@ -23,9 +23,14 @@ export default function GymPoster({ params }) {
 
   const getGymName = () => gyms.find((g) => g.id === salle)?.name || salle;
 
-  const gymSessions = plannings.filter(
-    (c) => c.salle === salle && c.period === "rentree-2026"
-  );
+  /* La periode n'est plus ecrite en dur : une salle peut n'exister que sur
+     une periode (le planning provisoire de Portet vit sous « provisoire-2026 »).
+     On prend « rentree-2026 » quand elle existe, sinon la seule que la salle
+     possede — sans quoi l'affiche se replie sur une grille de secours et
+     affiche cinq rangees d'acces libre, ce qui est pire que rien. */
+  const periodesDeLaSalle = [...new Set(plannings.filter((c) => c.salle === salle).map((c) => c.period))];
+  const periode = periodesDeLaSalle.includes("rentree-2026") ? "rentree-2026" : periodesDeLaSalle[0];
+  const gymSessions = plannings.filter((c) => c.salle === salle && c.period === periode);
 
   const html = buildGymPosterContainerHTML({
     gymId: salle,

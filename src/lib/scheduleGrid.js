@@ -82,8 +82,74 @@ export function hasMultipleSubColumns(gymId) {
 }
 
 export function getTimeSlotsForSessions(sessions) {
-  const slots = sortTimeSlots(Array.from(new Set(sessions.map((c) => c.timeSlot))));
-  return slots.length > 0 ? slots : ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
+  const tous = sortTimeSlots(Array.from(new Set(sessions.map((c) => c.timeSlot))));
+  if (!tous.length) return ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
+
+  /* Une RANGEE est un creneau atomique. Un cours de 18h a 20h n'ouvre pas
+     une rangee « 18h-20h » : il occupe les rangees 18h-19h et 19h-20h. Sans
+     ce tri, un creneau composite fabriquait sa propre ligne ET mangeait ses
+     sous-creneaux — le planning provisoire de Portet tombait de douze
+     rangees a cinq. On ecarte donc tout creneau qui en contient un autre. */
+  const bornes = (t) => {
+    const p = (t || "").split("-");
+    const d = parseTime(p[0]);
+    return [d, p.length === 2 ? parseTime(p[1]) : d + 60];
+  };
+  const atomiques = tous.filter((t) => {
+    const [d1, f1] = bornes(t);
+    return !tous.some((autre) => {
+      if (autre === t) return false;
+      const [d2, f2] = bornes(autre);
+      return d2 >= d1 && f2 <= f1 && (f2 - d2) < (f1 - d1);   // strictement contenu
+    });
+  });
+  return atomiques.length ? atomiques : tous;
+}
+
+/** Minutes -> "18h30" / "19h" (la forme utilisee par les plannings du club). */
+function formatTime(min) {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, "0")}`;
+}
+
+function sessionBounds(s) {
+  const p = (s.timeSlot || "").split("-");
+  const debut = parseTime(p[0]);
+  return [debut, p.length === 2 ? parseTime(p[1]) : debut + 60];
+}
+
+/**
+ * LES BANDES HORAIRES — la colonne de gauche du planning du patron.
+ *
+ * Une seance porte sa DUREE ("13h20-18h" = un acces libre de 4h40), pas un
+ * intitule de rangee. Construire l'axe vertical sur ces durees inventait des
+ * rangees qui n'existent nulle part dans l'ODS : Minimes en affichait treize
+ * la ou le fichier en compte onze, et Saint-Cyprien s'ouvrait une bande
+ * "18h-20h" entiere d'acces libre entre 17h/18h15 et 18h20/19h. Tout le reste
+ * suivait — les blocs se calaient sur un axe qui n'etait pas le bon.
+ *
+ * Une bande commence a chaque heure ou QUELQUE CHOSE commence, et se termine
+ * a la premiere fin de seance qui la traverse : c'est exactement la regle que
+ * suit la colonne "Horaire" de l'ODS, et elle en retrouve les intitules au
+ * mot pres (verifie sur les cinq affiches).
+ */
+export function buildTimeBands(sessions) {
+  if (!sessions || !sessions.length) {
+    return ["10h-12h", "12h40-13h20", "18h20-19h", "19h-20h", "20h-21h15"];
+  }
+  const bornes = sessions.map(sessionBounds);
+  const departs = Array.from(new Set(bornes.map(([d]) => d))).sort((a, b) => a - b);
+
+  return departs.map((debut) => {
+    // La bande s'arrete a la premiere seance qui la traverse et se termine.
+    let fin = Infinity;
+    for (const [d, f] of bornes) {
+      if (d <= debut && debut < f && f < fin) fin = f;
+    }
+    if (!isFinite(fin)) fin = debut + 60;
+    return `${formatTime(debut)}-${formatTime(fin)}`;
+  });
 }
 
 /**
@@ -171,12 +237,30 @@ export function getSessionGridBounds(session, columns, timeSlots, gymId, session
   });
   if (rowStart < 0) return null;
 
-  let uiRowSpan = 1;
+  /* Le nombre de bandes vient de la FUSION DE CELLULES du fichier du patron
+     (`rowSpan`), pas d'un recalcul sur les horaires. Recalculer faisait
+     deborder un cours de quelques minutes sur la bande suivante quand elle
+     etait libre, et pas quand elle etait prise : le mercredi 17h/18h15 de
+     Saint-Cyprien s'etirait sur 112 px la ou le samedi, meme cours et meme
+     heure, en faisait 56. L'ODS, lui, dit 1 pour les deux. */
+  /* `rowSpan` absent veut dire UNE bande — build_db.py ne l'ecrit que
+     lorsqu'il vaut plus de 1. Le lire comme "inconnu" et retomber sur un
+     calcul horaire redonnait le debordement : le samedi 17h/18h15 de
+     Saint-Cyprien reprenait deux bandes et poussait BOXE PIEDS POINGS
+     hors de l'affiche. */
+  /* DEUX bornes, et la plus courte gagne.
+     `rowSpan` compte les rangees de l'ODS ; nos bandes, elles, sautent les
+     heures ou rien ne commence. Quand l'ODS fusionne 10h/12h et 11h/12h mais
+     qu'aucun cours ne demarre a 11h, la bande 11h n'existe pas et un rowSpan
+     de 2 mordait sur 12h30 — l'ANGLAISE du samedi a Portet disparaissait.
+     Une seance ne peut jamais depasser sa propre heure de fin. */
+  let borneHoraire = 1;
   for (let i = rowStart + 1; i < timeSlots.length; i++) {
-    const tStart = parseTime(timeSlots[i].split("-")[0]);
-    if (tStart >= endTime) break;
-    uiRowSpan++;
+    if (parseTime(timeSlots[i].split("-")[0]) >= endTime) break;
+    borneHoraire++;
   }
+  const restantes = timeSlots.length - rowStart;
+  const uiRowSpan = Math.min(Math.max(1, normalized.rowSpan || 1), borneHoraire, restantes);
   const colSpan = getEffectiveColSpan(normalized, columns, colStart);
   return {
     session: normalized,
@@ -207,6 +291,10 @@ export function getSessionGridBounds(session, columns, timeSlots, gymId, session
  * trou en repoussant la bande. C'est ce croisement, resolu case par case
  * et sans memoire, qui laissait des lignes plus courtes que le tableau.
  */
+export function estAccesLibre(session) {
+  return !session || !session.activity || session.activity === "ACCES LIBRE";
+}
+
 export function construireMatrice(sessions, columns, timeSlots, gymId) {
   const L = timeSlots.length;
   const C = columns.length;
@@ -215,9 +303,19 @@ export function construireMatrice(sessions, columns, timeSlots, gymId) {
   const boites = sessions
     .map((s) => getSessionGridBounds(s, columns, timeSlots, gymId, sessions))
     .filter(Boolean)
-    /* Les plus grandes d'abord : une bande de quatre heures pose son
-       territoire, les cours qui tombent dedans prennent ce qui reste. */
-    .sort((a, b) => b.colSpan * b.rowSpan - a.colSpan * a.rowSpan);
+    /* LES COURS D'ABORD, l'acces libre ensuite.
+       Poser les plus grandes boites en premier revenait a donner la priorite
+       a l'acces libre, qui est toujours le plus gros bloc de la grille : aux
+       Minimes, la bande du samedi matin avalait le BOXING CAMP de 11h et le
+       cours disparaissait purement de l'affiche. L'acces libre n'est pas une
+       information, c'est ce qui reste quand aucun cours n'occupe la case — il
+       se sert donc en dernier, et se laisse raboter. */
+    .sort((a, b) => {
+      const libreA = estAccesLibre(a.session);
+      const libreB = estAccesLibre(b.session);
+      if (libreA !== libreB) return libreA ? 1 : -1;
+      return b.colSpan * b.rowSpan - a.colSpan * a.rowSpan;
+    });
 
   for (const b of boites) {
     /* On rabote a ce qui est REELLEMENT libre, en partant du coin haut

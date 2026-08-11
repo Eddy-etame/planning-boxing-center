@@ -6,7 +6,7 @@ import {
   buildDayHeaderGroups,
   getDayLabel,
   getGymDays,
-  getTimeSlotsForSessions,
+  buildTimeBands,
   hasMultipleSubColumns,
   parseTime,
   readableText,
@@ -24,7 +24,7 @@ export default function ScheduleGrid({
   onChangeCoach,
   allCoaches = [],
 }) {
-  const timeSlots = getTimeSlotsForSessions(sessions);
+  const timeSlots = buildTimeBands(sessions);
   const columns = buildColumnDescriptors(gymId);
   const dayGroups = buildDayHeaderGroups(columns);
   /* La grille se resout UNE fois, sur une matrice, et non case par case :

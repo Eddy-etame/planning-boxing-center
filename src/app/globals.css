@@ -104,8 +104,16 @@ body {
   /* On a poster page, print ONLY the poster — at full size and full colour. */
   body:has(#poster-container) *,
   body:has(#personal-poster-container) * { visibility: hidden !important; }
-  #poster-container, #poster-container *,
-  #personal-poster-container, #personal-poster-container * { visibility: visible !important; }
+  /* `:has()` emprunte la specificite de son argument : la regle qui MASQUE
+     pesait donc (1,0,1) et passait devant le `#poster-container` (1,0,0)
+     cense la reveler — les deux en !important, la plus specifique gagne, et
+     l'affiche sortait blanche. Mesure : les dix PDF A4 faisaient tous 1116
+     octets, zero caractere, zero image. Le bouton « Imprimer Poster » sortait
+     la meme page vide. On re-ancre sur body:has() pour repasser a (2,0,1). */
+  body:has(#poster-container) #poster-container,
+  body:has(#poster-container) #poster-container *,
+  body:has(#personal-poster-container) #personal-poster-container,
+  body:has(#personal-poster-container) #personal-poster-container * { visibility: visible !important; }
   #poster-container, #personal-poster-container {
     position: absolute !important;
     left: 0 !important;

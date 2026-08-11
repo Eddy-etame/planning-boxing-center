@@ -5,7 +5,9 @@ Génère les affiches planning dans les 3 formats demandés par le boss :
   2. PDF A4 imprimable
   3. PNG Story 9:16 (1080×1920, letterbox navy)
 Couleur par DISCIPLINE, jamais par coach — aucun nom de coach n'apparaît
-(règle appliquée par src/lib/posterExport.js). États-Unis exclu (site tiers).
+(règle appliquée par src/lib/posterExport.js). Les plannings d'origine de
+Portet sont, eux, coloriés par coach : on ne les recopie pas.
+Les 8 salles sont exportées, États-Unis compris.
 Prérequis : le serveur next dev tourne sur :3001.
 """
 import asyncio
@@ -21,7 +23,16 @@ WITH_QR = os.environ.get("QR", "1") != "0"
 OUT = os.path.join(BASE_OUT, "social" if WITH_QR else "web")
 os.makedirs(OUT, exist_ok=True)
 
-SALLES = ["portet-combat", "portet-mma", "minimes", "saint-cyprien", "ramonville"]
+SALLES = [
+    # Le provisoire de Portet a ses propres visuels : il vit du 24 aout au
+    # 3 octobre, puis les deux salles prennent le relais. Tant qu il est en
+    # ligne, il lui faut ses affiches comme aux autres.
+    "portet-provisoire",
+    "portet-combat", "portet-mma", "minimes", "saint-cyprien", "ramonville",
+    # Les trois salles des Etats-Unis etaient exclues de l'export : elles
+    # n'avaient donc AUCUNE affiche, alors que leurs plannings existent.
+    "etats-unis-boxe", "etats-unis-mma", "etats-unis-fitness",
+]
 
 def qr_data_uri(salle):
     """QR vers la boutique — UTM par salle : chaque affiche devient mesurable."""

@@ -528,7 +528,7 @@ def write_js(sessions, configs):
     # boxing-center-portet/public/img sont LA seule source de verite.
     # Deux points ou les ODS divergent des PDF — corriges ici, documentes :
     #   1. Portet salle boxe : PAS de Baby Boxe le mercredi (samedi uniquement).
-    #   2. Saint-Cyprien samedi soir : BOXE PIEDS POINGS 18h-20h (pas Anglaise).
+    #   2. Saint-Cyprien samedi soir : BOXE THAI/ K1 18h-20h (pas Anglaise).
     # ------------------------------------------------------------------
     before = len(sessions)
     sessions = [s for s in sessions if not (
@@ -536,8 +536,12 @@ def write_js(sessions, configs):
     )]
     for s in sessions:
         if s["salle"] == "saint-cyprien" and s["day"] == "samedi" and s["timeSlot"].startswith("18h") and s["activity"] == "ANGLAISE":
-            s["activity"] = "BOXE PIEDS POINGS"
-            s["timeSlot"] = "18h-20h"
+            s["activity"] = "BOXE THAI/ K1"
+            # La case du PDF PORTE "18H/20H" mais elle est POSEE sur les bandes
+            # 18h20/19h et 19h/20h. Faire demarrer la seance a 18h ouvrait une
+            # bande de quinze minutes qui n'existe nulle part dans le planning,
+            # et y alignait une rangee entiere d'acces libre.
+            s["timeSlot"] = "18h20-20h"
     print(f"  verite PDF appliquee ({before - len(sessions)} retrait, 1 bascule)")
 
     template_path = os.path.join(SCRIPT_DIR, "data_tables.json")

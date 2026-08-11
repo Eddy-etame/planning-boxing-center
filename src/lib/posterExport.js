@@ -1,6 +1,7 @@
 import {
   buildColumnDescriptors,
   buildDayHeaderGroups,
+  buildTimeBands,
   getDayLabel,
   getTimeSlotsForSessions,
   hasMultipleSubColumns,
@@ -21,13 +22,40 @@ import {
 const INK_DARK = "#0A0D1A";
 
 // Curated discipline palette. Order matters: first match wins.
+//
+// Deux familles etaient trop larges et ecrasaient des cours que le planning
+// du patron distingue pourtant a l'oeil. Mesure aux Etats-Unis : la salle MMA
+// sortait en UNE seule couleur (ses cinq cours tombaient tous dans
+// "MMA / Grappling") et la salle fitness en DEUX. Le planning d'origine, lui,
+// en compte quatre par salle — jaune pour le jiu-jitsu, rouge brique pour le
+// grappling, bleu acier pour l'asso, gris pour les jeunes.
+//
+// Les plannings de Portet, eux, sont colores PAR COACH — leur legende dit
+// ENZO / NICOLAS / SAMUEL / Ingrid, et le meme cours de MMA y change de
+// couleur selon qui l'anime. On ne les recopie pas : une affiche publique ne
+// trahit pas les affectations. Ce sont les plannings Etats-Unis,
+// Saint-Cyprien, Minimes et Ramonville — colores par activite — qui font foi.
 const DISCIPLINES = [
   { label: "Lady", color: "#EC4899", test: /LADY/ },
   { label: "Compétition", color: "#DC2626", test: /COMP[EÉ]TITEUR|AMATEURS ET PRO|\bPRO\b|CONFIRMES/ },
-  { label: "Boxing Camp", color: "#F59E0B", test: /BOXING CAMP/ },
-  { label: "MMA / Grappling", color: "#8B5CF6", test: /MMA|GRAPPLING|\bJJB\b|JIU-JITSU/ },
-  { label: "École de Boxe", color: "#0EA5E9", test: /BABY BOXE|EDUCATIVE|PIEDS POINGS.*(3\/6|7\/11|12\/16)/ },
-  { label: "Cross / Fitness", color: "#10B981", test: /CROSS|HYROX|HIIT|PR[EÉ]PA|\bFIT\b/ },
+  { label: "Boxing Camp", color: "#F59E0B", ink: "#FFFFFF", test: /BOXING CAMP/ },
+  /* LES JEUNES AVANT LES FAMILLES ADULTES : "MMA ENFANTS 10/16 ANS" doit
+     sortir en ecole, pas en MMA — le planning du patron met tous les cours
+     d'enfants dans le meme gris, boxe comme MMA comme kick. Place APRES
+     "Competition" pour que "BOXE EDUCATIVE COMPETITEURS" et "BOXE EDUCATIVE
+     CONFIRMES" restent en rouge competition. */
+  { label: "École / Jeunes", color: "#0EA5E9", test: /BABY BOXE|EDUCATIVE|ENFANTS|\bADOS\b|3\/6|7\/11|12\/16/ },
+  { label: "Jiu-Jitsu Brésilien", color: "#FACC15", test: /JIU-?JITSU|\bJJB\b/ },
+  /* Le planning met le grappling en rouge brique, mais le rouge appartient
+     deja a la competition et les deux se cotoient sur l'affiche de
+     Saint-Cyprien. On prend un vert-bleu franc : il ne ressemble ni au rouge,
+     ni au violet du MMA, ni au lime du cross-training. */
+  { label: "Grappling", color: "#0D9488", test: /GRAPPLING/ },
+  { label: "MMA", color: "#8B5CF6", test: /\bMMA\b/ },
+  { label: "Hyrox", color: "#A21CAF", test: /HYROX/ },
+  { label: "Boxing HIIT", color: "#15803D", test: /HIIT/ },
+  { label: "Cross-Training", color: "#A3E635", test: /CROSS/ },
+  { label: "Prépa physique", color: "#10B981", test: /PR[EÉ]PA|\bFIT\b/ },
   { label: "Pieds-Poings / Kick", color: "#F97316", test: /THA[ÏI]|KICK|K1|PIEDS POINGS|FRANCAISE/ },
   { label: "Boxe Anglaise", color: "#3B82F6", test: /ANGLAISE|SPARRING/ },
   { label: "Cours Été", color: "#CA8A04", test: /COURS ETE/ },
@@ -48,7 +76,7 @@ function escapeHtml(str) {
 }
 
 // Shared hero banner (photo + cinematic dark treatment + accent ribbon).
-function heroHtml({ eyebrow, title }) {
+function heroHtml({ eyebrow, title, periode }) {
   const size = title.length > 30 ? 30 : title.length > 22 ? 38 : 48;
   return `
     <div style="position:relative;height:230px;width:100%;overflow:hidden;border-radius:18px;margin-bottom:14px;background:url('/header-bg.png') center/cover no-repeat;box-sizing:border-box;">
@@ -65,6 +93,7 @@ function heroHtml({ eyebrow, title }) {
           <div style="font-size:12px;font-weight:800;letter-spacing:0.45em;color:#FBBF24;text-transform:uppercase;margin-bottom:12px;">${escapeHtml(eyebrow)}</div>
           <div style="font-size:${size}px;font-weight:900;color:#FFF;text-transform:uppercase;letter-spacing:-0.01em;line-height:1;text-shadow:0 2px 20px rgba(0,0,0,0.5);">${escapeHtml(title)}</div>
           <div style="margin:16px auto 0;height:3px;width:110px;border-radius:999px;background:linear-gradient(to right,#DC2626,#F59E0B);"></div>
+          ${periode ? `<div style="margin-top:13px;font-size:13px;font-weight:800;letter-spacing:0.06em;color:rgba(255,255,255,0.92);">${escapeHtml(periode)}</div>` : ""}
         </div>
       </div>
     </div>`;
@@ -106,8 +135,11 @@ const ACCES_LIBRE_HTML = `<div style="background:rgba(255,255,255,0.025);border:
 // A class cell coloured by discipline. `sub` is optional (used on coach posters
 // to show the venue); gym posters pass no sub so nothing identifies the coach.
 function classCellHtml(activity, sub) {
-  const { color } = disciplineOf(activity);
-  const ink = readableText(color);
+  const d = disciplineOf(activity);
+  const color = d.color;
+  // Per-discipline text-colour override (e.g. Boxing Camp forces white);
+  // everything else falls back to auto-contrast against the cell colour.
+  const ink = d.ink || readableText(color);
   const subHtml = sub
     ? `<span style="font-size:8px;font-weight:800;text-transform:uppercase;margin-top:4px;letter-spacing:0.12em;opacity:0.78;">${escapeHtml(sub)}</span>`
     : "";
@@ -122,7 +154,9 @@ function classCellHtml(activity, sub) {
 // Gym poster (handles ODS sub-columns + row/col spans via resolveCellState)
 // ---------------------------------------------------------------------------
 export function buildGymPosterGridHTML({ gymId, sessions }) {
-  const timeSlots = getTimeSlotsForSessions(sessions);
+  /* Les bandes de la colonne "Horaire" du planning du patron — surtout pas
+     la liste des durees de cours, qui inventait des rangees inexistantes. */
+  const timeSlots = buildTimeBands(sessions);
   const columns = buildColumnDescriptors(gymId);
   const dayGroups = buildDayHeaderGroups(columns);
   const showSubHeader = hasMultipleSubColumns(gymId);
@@ -163,7 +197,13 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
 
   const bodyRows = timeSlots
     .map((time, timeIndex) => {
-      const cells = [`<td style="${timeStyle}">${escapeHtml(time)}</td>`];
+      /* Une bande dont toutes les cases sont des continuations (un cours venu
+         d'au-dessus) n'avait plus rien pour tenir sa hauteur et s'aplatissait
+         a 29 px contre 56 ailleurs — aux Minimes, la bande 17h/18h. La cellule
+         d'horaire porte donc le plancher, pour toutes les rangees. */
+      const cells = [
+        `<td style="${timeStyle}"><div style="min-height:40px;display:flex;align-items:center;justify-content:center;">${escapeHtml(time)}</div></td>`,
+      ];
       for (const col of columns) {
         const state = matrice[timeIndex][col.colIndex];
         if (state.kind === "covered") continue;
@@ -180,10 +220,29 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
   return `<table style="width:100%;border-collapse:collapse;table-layout:fixed;"><thead>${headerRows}</thead><tbody>${bodyRows}</tbody></table>`;
 }
 
+/**
+ * LA COIFFE DE L'AFFICHE — ce qui change d'une periode a l'autre.
+ *
+ * Le planning provisoire ne porte PAS de nom de salle : pendant qu'il est
+ * seul en ligne, ecrire « salle combat » en haut ne distinguerait rien et
+ * laisserait croire qu'il en manque un. Il porte en revanche ses dates, pour
+ * qu'on sache qu'il expire — c'est la seule affiche du reseau qui a une fin.
+ */
+function coiffe(gymId, gymName) {
+  if (gymId === "portet-provisoire") {
+    return {
+      eyebrow: "Planning provisoire",
+      title: "PORTET-SUR-GARONNE",
+      periode: "Du 24 aout au 3 octobre · nouveau planning le 4 octobre",
+    };
+  }
+  return { eyebrow: "Planning des cours", title: gymName.toUpperCase(), periode: null };
+}
+
 export function buildGymPosterContainerHTML({ gymId, gymName, sessions }) {
   return `
     <div style="width:1200px;background:${INK_DARK};display:flex;flex-direction:column;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,0.08);font-family:Montserrat,system-ui,sans-serif;color:#FFF;">
-      <div style="padding:14px 14px 0;">${heroHtml({ eyebrow: "Planning des cours", title: gymName.toUpperCase() })}</div>
+      <div style="padding:14px 14px 0;">${heroHtml(coiffe(gymId, gymName))}</div>
       <div style="padding:0 14px;">${buildGymPosterGridHTML({ gymId, sessions })}</div>
       ${disciplineLegendHtml(sessions)}
       ${footerHtml()}
