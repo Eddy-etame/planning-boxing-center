@@ -55,15 +55,6 @@ export const initialPlannings = [
     coach: "MARAMA"
   },
   {
-    id: "rentree-58",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "15h15-16h",
-    activity: "BABY BOXE (3/6ANS)",
-    coach: "VAL"
-  },
-  {
     id: "rentree-59",
     salle: "portet-combat",
     period: "rentree-2026",
@@ -156,16 +147,6 @@ export const initialPlannings = [
     rowSpan: 2
   },
   {
-    id: "rentree-69",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "18h-19h",
-    activity: "OPEN SPARRING",
-    coach: "MARAMA",
-    rowSpan: 2
-  },
-  {
     id: "rentree-70",
     salle: "portet-combat",
     period: "rentree-2026",
@@ -234,15 +215,6 @@ export const initialPlannings = [
     rowSpan: 3
   },
   {
-    id: "rentree-77",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "10h-11h30",
-    activity: "BOXE FRANCAISE",
-    coach: "SAMUEL"
-  },
-  {
     id: "rentree-78",
     salle: "portet-mma",
     period: "rentree-2026",
@@ -258,15 +230,6 @@ export const initialPlannings = [
     day: "lundi",
     timeSlot: "12h30-13h30",
     activity: "GRAPPLING",
-    coach: "CALLUM"
-  },
-  {
-    id: "rentree-80",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "12h30-13h30",
-    activity: "JJB",
     coach: "CALLUM"
   },
   {
@@ -342,15 +305,6 @@ export const initialPlannings = [
     coach: "INGRID + SAMUEL"
   },
   {
-    id: "rentree-89",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "16h-17h",
-    activity: "KICK ENFANTS",
-    coach: "INGRID"
-  },
-  {
     id: "rentree-90",
     salle: "portet-mma",
     period: "rentree-2026",
@@ -423,15 +377,6 @@ export const initialPlannings = [
     coach: "ENZO"
   },
   {
-    id: "rentree-98",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "19h-20h",
-    activity: "PREPARATION PHYSIQUE",
-    coach: "SAMUEL"
-  },
-  {
     id: "rentree-99",
     salle: "portet-mma",
     period: "rentree-2026",
@@ -493,15 +438,6 @@ export const initialPlannings = [
     timeSlot: "20h-21h30",
     activity: "KICK BOXING / K1",
     coach: "SAMUEL"
-  },
-  {
-    id: "rentree-106",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "20h-21h30",
-    activity: "SPARRING KICK BOXING",
-    coach: "INGRID + SAMUEL"
   },
   {
     id: "rentree-107",
@@ -603,16 +539,6 @@ export const initialPlannings = [
     coach: "RENAUD"
   },
   {
-    id: "rentree-117",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "17h10-18h20",
-    activity: "LADY PUNCH",
-    coach: "Non Assigné",
-    subColumn: 1
-  },
-  {
     id: "rentree-118",
     salle: "etats-unis-boxe",
     period: "rentree-2026",
@@ -633,16 +559,6 @@ export const initialPlannings = [
     subColumn: 2
   },
   {
-    id: "rentree-120",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h30-19h40",
-    activity: "LADY PUNCH",
-    coach: "RENAUD",
-    subColumn: 2
-  },
-  {
     id: "rentree-121",
     salle: "etats-unis-boxe",
     period: "rentree-2026",
@@ -651,16 +567,6 @@ export const initialPlannings = [
     activity: "BOXE ANGLAISE",
     coach: "RENAUD",
     colSpan: 2
-  },
-  {
-    id: "rentree-122",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h30-19h40",
-    activity: "ANGLAISE COMPETITEURS",
-    coach: "RENAUD",
-    subColumn: 1
   },
   {
     id: "rentree-123",
@@ -673,16 +579,6 @@ export const initialPlannings = [
     colSpan: 2
   },
   {
-    id: "rentree-124",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "18h30-19h40",
-    activity: "LADY PUNCH",
-    coach: "RENAUD",
-    subColumn: 1
-  },
-  {
     id: "rentree-125",
     salle: "etats-unis-boxe",
     period: "rentree-2026",
@@ -691,16 +587,6 @@ export const initialPlannings = [
     activity: "BOXE ANGLAISE",
     coach: "RENAUD",
     colSpan: 2
-  },
-  {
-    id: "rentree-126",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h30-19h40",
-    activity: "ANGLAISE COMPETITEURS",
-    coach: "RENAUD",
-    subColumn: 1
   },
   {
     id: "rentree-127",
@@ -766,24 +652,6 @@ export const initialPlannings = [
     rowSpan: 3
   },
   {
-    id: "rentree-133",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "15h-16h",
-    activity: "MMA ENFANTS 10 /16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-134",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "16h15-17h15",
-    activity: "MMA ENFANTS 10 /16 ANS",
-    coach: "Non Assigné"
-  },
-  {
     id: "rentree-135",
     salle: "etats-unis-mma",
     period: "rentree-2026",
@@ -792,16 +660,6 @@ export const initialPlannings = [
     activity: "ASSO MMA ENFANTS 10 /16 ANS",
     coach: "ZOUIR",
     colSpan: 2,
-    subColumn: 1
-  },
-  {
-    id: "rentree-136",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h-19h",
-    activity: "LADY PUNCH",
-    coach: "Non Assigné",
     subColumn: 1
   },
   {
@@ -824,26 +682,6 @@ export const initialPlannings = [
     colSpan: 3
   },
   {
-    id: "rentree-139",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h20-19h30",
-    activity: "ANGLAISE",
-    coach: "ZOUIR",
-    subColumn: 2
-  },
-  {
-    id: "rentree-140",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h20-19h30",
-    activity: "LADY PUNCH",
-    coach: "ZOUIR",
-    subColumn: 2
-  },
-  {
     id: "rentree-141",
     salle: "etats-unis-mma",
     period: "rentree-2026",
@@ -852,26 +690,6 @@ export const initialPlannings = [
     activity: "GRAPPLING",
     coach: "ZOUIR",
     colSpan: 2
-  },
-  {
-    id: "rentree-142",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h20-19h30",
-    activity: "ANGLAISE COMPETITEURS",
-    coach: "ZOUIR",
-    subColumn: 1
-  },
-  {
-    id: "rentree-143",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "18h20-19h30",
-    activity: "LADY PUNCH",
-    coach: "Non Assigné",
-    subColumn: 1
   },
   {
     id: "rentree-144",
@@ -947,15 +765,6 @@ export const initialPlannings = [
     rowSpan: 3
   },
   {
-    id: "rentree-151",
-    salle: "etats-unis-fitness",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "11h-12h",
-    activity: "CROSS-TRAINING",
-    coach: "CLEMENT"
-  },
-  {
     id: "rentree-152",
     salle: "etats-unis-fitness",
     period: "rentree-2026",
@@ -1005,26 +814,6 @@ export const initialPlannings = [
     colSpan: 3
   },
   {
-    id: "rentree-157",
-    salle: "etats-unis-fitness",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h40-19h20",
-    activity: "ANGLAISE",
-    coach: "YANNIS CHOUET",
-    subColumn: 2
-  },
-  {
-    id: "rentree-158",
-    salle: "etats-unis-fitness",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h40-19h20",
-    activity: "LADY PUNCH",
-    coach: "YANNIS CHOUET",
-    subColumn: 2
-  },
-  {
     id: "rentree-159",
     salle: "etats-unis-fitness",
     period: "rentree-2026",
@@ -1033,16 +822,6 @@ export const initialPlannings = [
     activity: "LADY PUNCH",
     coach: "DAVID",
     colSpan: 2
-  },
-  {
-    id: "rentree-160",
-    salle: "etats-unis-fitness",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h40-19h20",
-    activity: "ANGLAISE COMPETITEURS",
-    coach: "DAVID",
-    subColumn: 1
   },
   {
     id: "rentree-161",
@@ -1063,16 +842,6 @@ export const initialPlannings = [
     activity: "HYROX",
     coach: "YANNIS CHOUET",
     colSpan: 2
-  },
-  {
-    id: "rentree-163",
-    salle: "etats-unis-fitness",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h40-19h20",
-    activity: "ANGLAISE COMPETITEURS",
-    coach: "YANNIS CHOUET",
-    subColumn: 1
   },
   {
     id: "rentree-164",
@@ -1138,15 +907,6 @@ export const initialPlannings = [
     rowSpan: 3
   },
   {
-    id: "rentree-170",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "11h-12h",
-    activity: "BOXING CAMP",
-    coach: "VALENTIN G"
-  },
-  {
     id: "rentree-171",
     salle: "ramonville",
     period: "rentree-2026",
@@ -1167,16 +927,6 @@ export const initialPlannings = [
     colSpan: 2
   },
   {
-    id: "rentree-173",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "12h40-13h20",
-    activity: "BOXE PIEDS POINGS",
-    coach: "SONIA",
-    colSpan: 2
-  },
-  {
     id: "rentree-174",
     salle: "ramonville",
     period: "rentree-2026",
@@ -1194,16 +944,6 @@ export const initialPlannings = [
     timeSlot: "12h40-13h20",
     activity: "ANGLAISE",
     coach: "VALENTIN G"
-  },
-  {
-    id: "rentree-176",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "14h15-15h",
-    activity: "BABY BOXE (3/6ANS)",
-    coach: "VALENTIN G",
-    subColumn: 1
   },
   {
     id: "rentree-177",
@@ -1228,16 +968,6 @@ export const initialPlannings = [
     subColumn: 1
   },
   {
-    id: "rentree-181",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "17h-18h30",
-    activity: "LADY PUNCH",
-    coach: "PASCAL",
-    subColumn: 1
-  },
-  {
     id: "rentree-182",
     salle: "ramonville",
     period: "rentree-2026",
@@ -1246,16 +976,6 @@ export const initialPlannings = [
     activity: "LADY PUNCH",
     coach: "SONIA",
     colSpan: 3
-  },
-  {
-    id: "rentree-183",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h-18h40",
-    activity: "LADY PUNCH",
-    coach: "SONIA",
-    subColumn: 1
   },
   {
     id: "rentree-184",
@@ -1308,16 +1028,6 @@ export const initialPlannings = [
     colSpan: 2
   },
   {
-    id: "rentree-189",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "18h40-19h40",
-    activity: "LADY PUNCH",
-    coach: "FAROUK",
-    subColumn: 1
-  },
-  {
     id: "rentree-190",
     salle: "ramonville",
     period: "rentree-2026",
@@ -1326,16 +1036,6 @@ export const initialPlannings = [
     activity: "BOXING CAMP",
     coach: "JEROME",
     colSpan: 2
-  },
-  {
-    id: "rentree-191",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h40-19h40",
-    activity: "ANGLAISE CONFIRMES",
-    coach: "FAROUK",
-    subColumn: 1
   },
   {
     id: "rentree-192",
@@ -1365,17 +1065,6 @@ export const initialPlannings = [
     timeSlot: "19h45-21h15",
     activity: "ASSO MMA",
     coach: "JEROME",
-    rowSpan: 3,
-    colSpan: 2
-  },
-  {
-    id: "rentree-195",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "19h45-21h15",
-    activity: "ANGLAISE LOISIRS",
-    coach: "FAROUK",
     rowSpan: 3,
     colSpan: 2
   },
@@ -1462,16 +1151,6 @@ export const initialPlannings = [
     activity: "ACCES LIBRE",
     coach: "ACCES LIBRE",
     colSpan: 2
-  },
-  {
-    id: "rentree-204",
-    salle: "saint-cyprien",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "10h-11h",
-    activity: "FIT BOXE",
-    coach: "Non Assigné",
-    subColumn: 1
   },
   {
     id: "rentree-205",
@@ -1777,17 +1456,6 @@ export const initialPlannings = [
     coach: "DADI"
   },
   {
-    id: "rentree-235",
-    salle: "saint-cyprien",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "18h20-19h",
-    activity: "ANGLAISE",
-    coach: "DADI",
-    rowSpan: 2,
-    colSpan: 2
-  },
-  {
     id: "rentree-236",
     salle: "saint-cyprien",
     period: "rentree-2026",
@@ -1909,26 +1577,6 @@ export const initialPlannings = [
     subColumn: 1
   },
   {
-    id: "rentree-248",
-    salle: "saint-cyprien",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "20h-21h15",
-    activity: "MUAY (LOISIR ET COMPÉTITEURS)",
-    coach: "Non Assigné",
-    subColumn: 1
-  },
-  {
-    id: "rentree-249",
-    salle: "saint-cyprien",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "20h-21h15",
-    activity: "ANGLAISE",
-    coach: "Non Assigné",
-    subColumn: 1
-  },
-  {
     id: "min-1",
     salle: "minimes",
     period: "rentree-2026",
@@ -1987,16 +1635,6 @@ export const initialPlannings = [
     activity: "BOXE COMPÉTITEURS",
     coach: "MEHDI B",
     rowSpan: 2
-  },
-  {
-    id: "min-7",
-    salle: "minimes",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h30-19h30",
-    activity: "CROSS-TRAINING",
-    coach: "HICHAM",
-    subColumn: 1
   },
   {
     id: "min-8",
@@ -2082,16 +1720,6 @@ export const initialPlannings = [
     activity: "BOXE COMPÉTITEURS",
     coach: "MEHDI B",
     rowSpan: 2
-  },
-  {
-    id: "min-17",
-    salle: "minimes",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h30-19h30",
-    activity: "CROSS-TRAINING",
-    coach: "HICHAM",
-    subColumn: 1
   },
   {
     id: "min-18",
@@ -2296,15 +1924,6 @@ export const initialPlannings = [
     coach: "INGRID"
   },
   {
-    id: "prov-13",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "mercredi",
-    timeSlot: "18h-19h",
-    activity: "BOXING LADY",
-    coach: "INGRID"
-  },
-  {
     id: "prov-14",
     salle: "portet-provisoire",
     period: "provisoire-2026",
@@ -2359,15 +1978,6 @@ export const initialPlannings = [
     coach: "MOURAD"
   },
   {
-    id: "prov-20",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "vendredi",
-    timeSlot: "12h30-13h30",
-    activity: "SPARRING ANGLAISE ET KICK",
-    coach: "MOURAD"
-  },
-  {
     id: "prov-21",
     salle: "portet-provisoire",
     period: "provisoire-2026",
@@ -2375,35 +1985,6 @@ export const initialPlannings = [
     timeSlot: "18h-19h",
     activity: "BOXE AMATEURS ET PROS",
     coach: "MOURAD"
-  },
-  {
-    id: "prov-22",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "vendredi",
-    timeSlot: "19h-21h30",
-    activity: "SPARRING ANGLAISE ET KICK",
-    coach: "MOURAD",
-    rowSpan: 2
-  },
-  {
-    id: "prov-23",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "samedi",
-    timeSlot: "10h-11h",
-    activity: "BOXE FRANCAISE",
-    coach: "Non Assigné"
-  },
-  {
-    id: "prov-24",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "samedi",
-    timeSlot: "10h-11h",
-    activity: "KICK ENFANTS",
-    coach: "Non Assigné",
-    subColumn: 1
   },
   {
     id: "prov-25",
@@ -2616,6 +2197,205 @@ export const initialPlannings = [
     timeSlot: "16h-17h",
     activity: "BOXE EDUCATIVE 12/16 ANS",
     coach: "Non Assigné"
+  },
+  {
+    id: "rentree-262",
+    salle: "minimes",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "18h30-19h30",
+    activity: "BOXING CAMP",
+    coach: "HICHAM"
+  },
+  {
+    id: "rentree-263",
+    salle: "minimes",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "18h30-19h30",
+    activity: "BOXING CAMP",
+    coach: "HICHAM"
+  },
+  {
+    id: "rentree-264",
+    salle: "etats-unis-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "15h-16h",
+    activity: "ASSO MMA ENFANTS 10 /16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-265",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "mercredi",
+    timeSlot: "17h-18h",
+    activity: "LADY BOXING",
+    coach: "INGRID"
+  },
+  {
+    id: "rentree-266",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "vendredi",
+    timeSlot: "11h-12h",
+    activity: "OPEN SPARRING",
+    coach: "MOURAD"
+  },
+  {
+    id: "rentree-267",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "vendredi",
+    timeSlot: "12h30-13h30",
+    activity: "ANGLAISE / KICK",
+    coach: "MOURAD"
+  },
+  {
+    id: "rentree-268",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "vendredi",
+    timeSlot: "19h-20h",
+    activity: "OPEN SPARRING",
+    coach: "MOURAD"
+  },
+  {
+    id: "rentree-269",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "vendredi",
+    timeSlot: "20h-21h30",
+    activity: "ANGLAISE / KICK",
+    coach: "MOURAD"
+  },
+  {
+    id: "rentree-271",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "12h30-13h30",
+    activity: "MMA",
+    coach: "CALLUM"
+  },
+  {
+    id: "rentree-272",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "17h-18h",
+    activity: "PREPATION PHYSIQUE",
+    coach: "CALLUM"
+  },
+  {
+    id: "rentree-273",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "17h-18h",
+    activity: "OPEN SPARRING",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-274",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "20h-21h30",
+    activity: "ANGLAISE LOISIRS",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-275",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "20h-21h30",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-276",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "20h-21h30",
+    activity: "OPEN SPARRING",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-277",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "18h-18h40",
+    activity: "BOXE ANGLAISE",
+    coach: "SONIA"
+  },
+  {
+    id: "rentree-278",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "12h40-13h20",
+    activity: "BOXE PIEDS POINGS",
+    coach: "SONIA"
+  },
+  {
+    id: "rentree-279",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "18h-18h40",
+    activity: "LADY PUNCH",
+    coach: "VALENTIN G"
+  },
+  {
+    id: "rentree-280",
+    salle: "saint-cyprien",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h-16h",
+    activity: "BOXE PIEDS POINGS",
+    coach: "ACCES LIBRE"
+  },
+  {
+    id: "rentree-77",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "10h-11h30",
+    activity: "BOXE FRANCAISE",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-89",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "16h-17h",
+    activity: "KICK ENFANTS",
+    coach: "INGRID"
+  },
+  {
+    id: "prov-23",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "samedi",
+    timeSlot: "10h-11h",
+    activity: "BOXE FRANCAISE",
+    coach: "Non Assigné"
+  },
+  {
+    id: "prov-24",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "samedi",
+    timeSlot: "10h-11h",
+    activity: "KICK ENFANTS",
+    coach: "Non Assigné",
+    subColumn: 1
   },
 ];
 
