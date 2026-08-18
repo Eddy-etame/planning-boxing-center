@@ -35,11 +35,25 @@ SALLES = [
 ]
 
 def qr_data_uri(salle):
-    """QR vers la boutique — UTM par salle : chaque affiche devient mesurable."""
+    """QR vers la boutique. Trois reglages qui decident s il se scanne ou non :
+
+    · border=4 — la ZONE DE SILENCE. La norme QR en exige quatre modules ;
+      il en avait deux. Un scanner qui ne trouve pas ce blanc autour du code
+      ne verrouille pas dessus, meme si l image est nette.
+    · box_size=12 — chaque module fait 12 px a la source au lieu de 8, donc
+      l image reste franche apres la reduction en story 1080.
+    · correction L — l URL est courte (32 caracteres), on reste en version
+      basse : moins de modules, donc des modules PLUS GROS a taille egale.
+      C est le reglage qui fait qu on scanne de loin sans zoomer.
+    """
     import io as _io
     import qrcode
     url = "https://boutique.boxingcenter.fr/"
-    img = qrcode.make(url, box_size=8, border=2)
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L,
+                       box_size=12, border=4)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
     buf = _io.BytesIO()
     img.save(buf, format="PNG")
     import base64
@@ -52,7 +66,11 @@ async def export_for_target(with_qr):
     print(f"\n==================== EXPORTING FOR {target_name.upper()} ====================")
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        page = await browser.new_page(viewport={"width": 1400, "height": 900})
+        # device_scale_factor : l affiche fait 1200 px de large en CSS. Sans ce
+        # facteur, Playwright la capturait a 1200 px reels — d ou le rendu mou
+        # signale par le boss. A 4, on sort 4800 px de large (au-dela du 4K).
+        page = await browser.new_page(viewport={"width": 1400, "height": 900},
+                                      device_scale_factor=4)
         for salle in SALLES:
             url = f"http://localhost:3001/poster/{salle}"
             print(f"— {salle} ({target_name})")
@@ -68,9 +86,9 @@ async def export_for_target(with_qr):
                   if (!p || p.querySelector('.qr-footer')) return;
                   const bar = document.createElement('div');
                   bar.className = 'qr-footer';
-                  bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0 6px;';
-                  bar.innerHTML = `<img src="${qr}" alt="" style="width:86px;height:86px;border-radius:8px;border:3px solid #fff;display:block" />
-                    <div style="text-align:left;color:#fff;font-weight:800;font-size:13px;line-height:1.45;letter-spacing:.04em">SCANNE-MOI — L'OFFRE RENTRÉE<br><span style="color:#F59E0B">29€ PAR PERSONNE · 4 SEMAINES</span><br><span style="opacity:.75;font-weight:600;font-size:11px">boutique.boxingcenter.fr</span></div>`;
+                  bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:22px;padding:20px 0 10px;';
+                  bar.innerHTML = `<span style="display:block;background:#fff;padding:10px;border-radius:10px;line-height:0"><img src="${qr}" alt="" style="width:190px;height:190px;display:block;border-radius:0;image-rendering:pixelated" /></span>
+                    <div style="text-align:left;color:#fff;font-weight:800;font-size:17px;line-height:1.45;letter-spacing:.04em">SCANNE-MOI — L'OFFRE RENTRÉE<br><span style="color:#F59E0B">29€ PAR PERSONNE · 4 SEMAINES</span><br><span style="opacity:.75;font-weight:600;font-size:11px">boutique.boxingcenter.fr</span></div>`;
                   p.appendChild(bar);
                 }""", qr_data_uri(salle))
 

@@ -180,8 +180,14 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
 
   const thStyle =
     "background:linear-gradient(to bottom,#1f3a63,#152a4d);border:1px solid " + INK_DARK + ";text-align:center;padding:12px 4px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.18em;color:#FFF;";
+  /* Les pastilles « 1 / 2 / 3 » sous les jours cassaient le visuel (retour
+     du boss). On ne peut PAS supprimer la rangee : avec table-layout fixed
+     et un colspan sur la rangee des jours, c'est elle qui donne sa largeur
+     a chaque sous-colonne. On la garde donc, invisible : hauteur nulle,
+     ni fond ni bordure ni texte. La grille garde ses proportions, l'oeil
+     ne voit plus qu'un bandeau de jours d'un seul tenant. */
   const subThStyle =
-    "background:#16263f;border:1px solid " + INK_DARK + ";text-align:center;padding:4px;font-size:8px;font-weight:900;text-transform:uppercase;color:rgba(255,255,255,0.55);";
+    "background:transparent;border:0;padding:0;height:0;line-height:0;font-size:0;color:transparent;";
   const timeHeadStyle =
     "background:#0c1326;border:1px solid " + INK_DARK + ";text-align:center;padding:12px 4px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);width:96px;";
   const timeStyle =
@@ -212,7 +218,7 @@ export function buildGymPosterGridHTML({ gymId, sessions }) {
     headerRows += `<tr>${columns
       .map((col) => {
         const multi = dayGroups.find((g) => g.day === col.day)?.count > 1;
-        return `<th style="${subThStyle}">${multi ? col.subColumn + 1 : ""}</th>`;
+        return `<th style="${subThStyle}"></th>`;   // numero retire, la cellule ne sert plus qu a la largeur
       })
       .join("")}</tr>`;
   }
