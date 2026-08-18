@@ -2040,6 +2040,15 @@ export const initialPlannings = [
     activity: "OPEN SPARRING",
     coach: "Non Assigné"
   },
+  {
+    id: "rentree-660",
+    salle: "etats-unis-fitness",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "13h20-18h20",
+    activity: "ACCES LIBRE",
+    coach: "ACCES LIBRE"
+  },
 ];
 
 export const gymGridConfig = {
