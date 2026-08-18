@@ -1209,41 +1209,23 @@ export const initialPlannings = [
     id: "rentree-177",
     salle: "ramonville",
     period: "rentree-2026",
-    day: "mardi",
+    day: "mercredi",
     timeSlot: "15h-16h",
     activity: "BOXE EDUCATIVE 7/11 ANS",
     coach: "VALENTIN G",
     colSpan: 2,
     subColumn: 1
-  },
-  {
-    id: "rentree-178",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "15h-16h",
-    activity: "BOXE EDUCATIVE 7/11 ANS",
-    coach: "VALENTIN G"
   },
   {
     id: "rentree-179",
     salle: "ramonville",
     period: "rentree-2026",
-    day: "mardi",
+    day: "mercredi",
     timeSlot: "16h-17h",
     activity: "BOXE EDUCATIVE 12/16 ANS",
     coach: "VALENTIN G",
     colSpan: 2,
     subColumn: 1
-  },
-  {
-    id: "rentree-180",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "16h-17h",
-    activity: "BOXE EDUCATIVE 12/16 ANS",
-    coach: "VALENTIN G"
   },
   {
     id: "rentree-181",
