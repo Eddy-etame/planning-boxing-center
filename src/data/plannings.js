@@ -1,445 +1,5 @@
 export const initialPlannings = [
   {
-    id: "rentree-52",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "10h-12h",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL",
-    rowSpan: 2
-  },
-  {
-    id: "rentree-53",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "12h30-13h30",
-    activity: "ANGLAISE",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-54",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "12h30-13h30",
-    activity: "PREPARATION PHYSIQUE",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-55",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "12h30-13h30",
-    activity: "ANGLAISE",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-56",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "12h30-13h30",
-    activity: "ANGLAISE",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-57",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "12h30-13h30",
-    activity: "ANGLAISE",
-    coach: "MARAMA"
-  },
-  {
-    id: "rentree-59",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "15h15-16h",
-    activity: "BABY BOXE (3/6ANS)",
-    coach: "MARAMA/ VAL"
-  },
-  {
-    id: "rentree-60",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "16h-17h",
-    activity: "BOXE EDUCATIVE 7/11ANS",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-61",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "16h-17h",
-    activity: "BOXE EDUCATIVE 7/11ANS",
-    coach: "MARAMA/ VAL"
-  },
-  {
-    id: "rentree-62",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "17h-18h",
-    activity: "BOXE EDUCATIVE 12/16ANS",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-63",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "17h-18h",
-    activity: "BOXE EDUCATIVE 12/16ANS",
-    coach: "MARAMA/ VAL"
-  },
-  {
-    id: "rentree-64",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h-19h",
-    activity: "BOXE EDUCATIVE CONFIRMES",
-    coach: "MARAMA"
-  },
-  {
-    id: "rentree-65",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h-19h",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-66",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "18h-19h",
-    activity: "LADY BOXING",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-67",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h-19h",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL",
-    rowSpan: 2
-  },
-  {
-    id: "rentree-68",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "18h-19h",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL",
-    rowSpan: 2
-  },
-  {
-    id: "rentree-70",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "19h-20h",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL",
-    rowSpan: 4
-  },
-  {
-    id: "rentree-71",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "19h-20h",
-    activity: "PREPARATION PHYSIQUE",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-72",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "19h-20h",
-    activity: "ANGLAISE LOISIRS",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-73",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "20h-21h30",
-    activity: "ANGLAISE LOISIRS",
-    coach: "VAL",
-    rowSpan: 3
-  },
-  {
-    id: "rentree-74",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "20h-21h30",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL",
-    rowSpan: 3
-  },
-  {
-    id: "rentree-75",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "20h-21h30",
-    activity: "ANGLAISE LOISIRS",
-    coach: "VAL",
-    rowSpan: 3
-  },
-  {
-    id: "rentree-76",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "20h-21h30",
-    activity: "SPARRING ANGLAISE",
-    coach: "Non Assigné",
-    rowSpan: 3
-  },
-  {
-    id: "rentree-78",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "11h30-12h30",
-    activity: "PREPARATION PHYSIQUE",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-79",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "12h30-13h30",
-    activity: "GRAPPLING",
-    coach: "CALLUM"
-  },
-  {
-    id: "rentree-81",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "12h30-13h30",
-    activity: "KICK / K1",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-82",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "12h30-13h30",
-    activity: "GRAPPLING",
-    coach: "CALLUM"
-  },
-  {
-    id: "rentree-83",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "12h30-13h30",
-    activity: "KICK / K1",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-84",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "12h30-13h30",
-    activity: "CRENEAU ASSO MMA",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-85",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "14h-15h",
-    activity: "GRAPPLING",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-86",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "15h-16h",
-    activity: "KICK ENFANTS",
-    coach: "INGRID + SAMUEL"
-  },
-  {
-    id: "rentree-87",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "15h-16h",
-    activity: "MMA ADOS",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-88",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "16h-17h",
-    activity: "KICK ADOS",
-    coach: "INGRID + SAMUEL"
-  },
-  {
-    id: "rentree-90",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "17h-18h",
-    activity: "CRENAU ASSO MMA ADOS",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-91",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "17h-18h",
-    activity: "KICK ADOS",
-    coach: "INGRID"
-  },
-  {
-    id: "rentree-92",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "18h-19h",
-    activity: "GRAPPLING",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-93",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h-19h",
-    activity: "LADY KICK",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-94",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "18h-19h",
-    activity: "GRAPPLING",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-95",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h-19h",
-    activity: "LADY KICK",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-96",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "18h-19h",
-    activity: "GRAPPLING",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-97",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "19h-20h",
-    activity: "CRENEAU ASSO MMA",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-99",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "19h-20h",
-    activity: "CRENEAU ASSO MMA",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-100",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "19h-20h",
-    activity: "BOXE FRANCAISE",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-101",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "19h-20h",
-    activity: "CRENEAU ASSO MMA",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-102",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "lundi",
-    timeSlot: "20h-21h30",
-    activity: "JJB",
-    coach: "ENZO"
-  },
-  {
-    id: "rentree-103",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "20h-21h30",
-    activity: "KICK BOXING / K1",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-104",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "20h-21h30",
-    activity: "KICK BOXING / K1",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-105",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "20h-21h30",
-    activity: "KICK BOXING / K1",
-    coach: "SAMUEL"
-  },
-  {
     id: "rentree-107",
     salle: "etats-unis-boxe",
     period: "rentree-2026",
@@ -1577,6 +1137,708 @@ export const initialPlannings = [
     subColumn: 1
   },
   {
+    id: "sum-1",
+    salle: "saint-cyprien",
+    period: "ete-2026",
+    day: "lundi",
+    timeSlot: "10h-11h",
+    activity: "COURS ETE",
+    coach: "MEHDI B"
+  },
+  {
+    id: "sum-2",
+    salle: "saint-cyprien",
+    period: "ete-2026",
+    day: "lundi",
+    timeSlot: "12h30-13h30",
+    activity: "COURS ETE",
+    coach: "DADI"
+  },
+  {
+    id: "sum-3",
+    salle: "saint-cyprien",
+    period: "ete-2026",
+    day: "lundi",
+    timeSlot: "20h-21h",
+    activity: "COURS ETE",
+    coach: "WALID"
+  },
+  {
+    id: "sum-4",
+    salle: "ramonville",
+    period: "ete-2026",
+    day: "lundi",
+    timeSlot: "12h30-13h30",
+    activity: "COURS ETE",
+    coach: "RENAUD"
+  },
+  {
+    id: "sum-5",
+    salle: "ramonville",
+    period: "ete-2026",
+    day: "lundi",
+    timeSlot: "20h-21h",
+    activity: "COURS ETE",
+    coach: "FAYEZ"
+  },
+  {
+    id: "rentree-250",
+    salle: "etats-unis-boxe",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "11h-12h",
+    activity: "BOXE ANGLAISE",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-251",
+    salle: "etats-unis-boxe",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "14h15-15h",
+    activity: "BOXE PIEDS POINGS (3/6ANS)",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-252",
+    salle: "etats-unis-boxe",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h-16h",
+    activity: "BOXE PIEDS POINGS 7/11 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-253",
+    salle: "etats-unis-boxe",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "16h-17h",
+    activity: "BOXE PIEDS POINGS 12/16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-254",
+    salle: "etats-unis-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "14h15-15h",
+    activity: "MMA ENFANTS 10/16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-255",
+    salle: "etats-unis-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h-16h",
+    activity: "MMA ENFANTS 10/16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-256",
+    salle: "etats-unis-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "16h15-17h15",
+    activity: "ASSO MMA ENFANTS 10/16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-257",
+    salle: "etats-unis-fitness",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "11h-12h",
+    activity: "CROSS-TRAINING",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-258",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "11h-12h",
+    activity: "BOXING CAMP",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-259",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "14h15-15h",
+    activity: "BABY BOXE (3/6ANS)",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-260",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h-16h",
+    activity: "BOXE EDUCATIVE 7/11 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-261",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "16h-17h",
+    activity: "BOXE EDUCATIVE 12/16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-264",
+    salle: "etats-unis-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "15h-16h",
+    activity: "ASSO MMA ENFANTS 10 /16 ANS",
+    coach: "Non Assigné"
+  },
+  {
+    id: "rentree-277",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "18h-18h40",
+    activity: "BOXE ANGLAISE",
+    coach: "SONIA"
+  },
+  {
+    id: "rentree-278",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "12h40-13h20",
+    activity: "BOXE PIEDS POINGS",
+    coach: "SONIA"
+  },
+  {
+    id: "rentree-279",
+    salle: "ramonville",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "18h-18h40",
+    activity: "LADY PUNCH",
+    coach: "VALENTIN G"
+  },
+  {
+    id: "rentree-280",
+    salle: "saint-cyprien",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h-16h",
+    activity: "BOXE PIEDS POINGS",
+    coach: "ACCES LIBRE"
+  },
+  {
+    id: "rentree-52",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "10h-12h",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL",
+    rowSpan: 2
+  },
+  {
+    id: "rentree-53",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "12h30-13h30",
+    activity: "ANGLAISE",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-54",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "12h30-13h30",
+    activity: "PREPARATION PHYSIQUE",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-55",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "12h30-13h30",
+    activity: "ANGLAISE",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-56",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "12h30-13h30",
+    activity: "ANGLAISE",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-57",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "12h30-13h30",
+    activity: "ANGLAISE",
+    coach: "MARAMA"
+  },
+  {
+    id: "rentree-58",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "15h15-16h",
+    activity: "BABY BOXE (3/6ANS)",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-59",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h15-16h",
+    activity: "BABY BOXE (3/6ANS)",
+    coach: "MARAMA/ VAL"
+  },
+  {
+    id: "rentree-60",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "16h-17h",
+    activity: "BOXE EDUCATIVE 7/11ANS",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-61",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "16h-17h",
+    activity: "BOXE EDUCATIVE 7/11ANS",
+    coach: "MARAMA/ VAL"
+  },
+  {
+    id: "rentree-62",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "17h-18h",
+    activity: "BOXE EDUCATIVE 12/16ANS",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-63",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "17h-18h",
+    activity: "BOXE EDUCATIVE 12/16ANS",
+    coach: "MARAMA/ VAL"
+  },
+  {
+    id: "rentree-64",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "18h-19h",
+    activity: "BOXE EDUCATIVE CONFIRMES",
+    coach: "MARAMA"
+  },
+  {
+    id: "rentree-65",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "18h-19h",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL"
+  },
+  {
+    id: "rentree-66",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "18h-19h",
+    activity: "LADY BOXING",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-67",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "18h-19h",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL",
+    rowSpan: 2
+  },
+  {
+    id: "rentree-68",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "18h-19h",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL",
+    rowSpan: 2
+  },
+  {
+    id: "rentree-69",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "18h-19h",
+    activity: "OPEN SPARRING",
+    coach: "MARAMA",
+    rowSpan: 2
+  },
+  {
+    id: "rentree-70",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "19h-20h",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL",
+    rowSpan: 4
+  },
+  {
+    id: "rentree-71",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "19h-20h",
+    activity: "PREPARATION PHYSIQUE",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-72",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "19h-20h",
+    activity: "ANGLAISE LOISIRS",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-73",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "20h-21h30",
+    activity: "ANGLAISE LOISIRS",
+    coach: "VAL",
+    rowSpan: 3
+  },
+  {
+    id: "rentree-74",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "20h-21h30",
+    activity: "BOXE AMATEURS ET PROS",
+    coach: "VAL",
+    rowSpan: 3
+  },
+  {
+    id: "rentree-75",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "20h-21h30",
+    activity: "ANGLAISE LOISIRS",
+    coach: "VAL",
+    rowSpan: 3
+  },
+  {
+    id: "rentree-76",
+    salle: "portet-combat",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "20h-21h30",
+    activity: "SPARRING ANGLAISE",
+    coach: "Non Assigné",
+    rowSpan: 3
+  },
+  {
+    id: "rentree-77",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "10h-11h30",
+    activity: "BOXE FRANCAISE",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-78",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "11h30-12h30",
+    activity: "PREPARATION PHYSIQUE",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-79",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "12h30-13h30",
+    activity: "GRAPPLING",
+    coach: "CALLUM"
+  },
+  {
+    id: "rentree-80",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "12h30-13h30",
+    activity: "JJB",
+    coach: "CALLUM"
+  },
+  {
+    id: "rentree-81",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "12h30-13h30",
+    activity: "KICK / K1",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-82",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "12h30-13h30",
+    activity: "GRAPPLING",
+    coach: "CALLUM"
+  },
+  {
+    id: "rentree-83",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "12h30-13h30",
+    activity: "KICK / K1",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-84",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "12h30-13h30",
+    activity: "CRENEAU ASSO MMA",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-85",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "14h-15h",
+    activity: "GRAPPLING",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-86",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "15h-16h",
+    activity: "KICK ENFANTS",
+    coach: "INGRID + SAMUEL"
+  },
+  {
+    id: "rentree-87",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "15h-16h",
+    activity: "MMA ADOS",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-88",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "16h-17h",
+    activity: "KICK ADOS",
+    coach: "INGRID + SAMUEL"
+  },
+  {
+    id: "rentree-89",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "16h-17h",
+    activity: "KICK ENFANTS",
+    coach: "INGRID"
+  },
+  {
+    id: "rentree-90",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "17h-18h",
+    activity: "CRENAU ASSO MMA ADOS",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-91",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "samedi",
+    timeSlot: "17h-18h",
+    activity: "KICK ADOS",
+    coach: "INGRID"
+  },
+  {
+    id: "rentree-92",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "18h-19h",
+    activity: "GRAPPLING",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-93",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "18h-19h",
+    activity: "LADY KICK",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-94",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "18h-19h",
+    activity: "GRAPPLING",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-95",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "18h-19h",
+    activity: "LADY KICK",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-96",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "18h-19h",
+    activity: "GRAPPLING",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-97",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "19h-20h",
+    activity: "CRENEAU ASSO MMA",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-98",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "19h-20h",
+    activity: "PREPARATION PHYSIQUE",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-99",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "19h-20h",
+    activity: "CRENEAU ASSO MMA",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-100",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "19h-20h",
+    activity: "BOXE FRANCAISE",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-101",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "19h-20h",
+    activity: "CRENEAU ASSO MMA",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-102",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "lundi",
+    timeSlot: "20h-21h30",
+    activity: "JJB",
+    coach: "ENZO"
+  },
+  {
+    id: "rentree-103",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "20h-21h30",
+    activity: "KICK BOXING / K1",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-104",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "mercredi",
+    timeSlot: "20h-21h30",
+    activity: "KICK BOXING / K1",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-105",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "20h-21h30",
+    activity: "KICK BOXING / K1",
+    coach: "SAMUEL"
+  },
+  {
+    id: "rentree-106",
+    salle: "portet-mma",
+    period: "rentree-2026",
+    day: "vendredi",
+    timeSlot: "20h-21h30",
+    activity: "SPARRING KICK BOXING",
+    coach: "INGRID + SAMUEL"
+  },
+  {
     id: "min-1",
     salle: "minimes",
     period: "rentree-2026",
@@ -1635,6 +1897,16 @@ export const initialPlannings = [
     activity: "BOXE COMPÉTITEURS",
     coach: "MEHDI B",
     rowSpan: 2
+  },
+  {
+    id: "min-7",
+    salle: "minimes",
+    period: "rentree-2026",
+    day: "mardi",
+    timeSlot: "18h30-19h30",
+    activity: "CROSS-TRAINING",
+    coach: "HICHAM",
+    subColumn: 1
   },
   {
     id: "min-8",
@@ -1720,6 +1992,16 @@ export const initialPlannings = [
     activity: "BOXE COMPÉTITEURS",
     coach: "MEHDI B",
     rowSpan: 2
+  },
+  {
+    id: "min-17",
+    salle: "minimes",
+    period: "rentree-2026",
+    day: "jeudi",
+    timeSlot: "18h30-19h30",
+    activity: "CROSS-TRAINING",
+    coach: "HICHAM",
+    subColumn: 1
   },
   {
     id: "min-18",
@@ -1924,6 +2206,15 @@ export const initialPlannings = [
     coach: "INGRID"
   },
   {
+    id: "prov-13",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "mercredi",
+    timeSlot: "18h-19h",
+    activity: "BOXING LADY",
+    coach: "INGRID"
+  },
+  {
     id: "prov-14",
     salle: "portet-provisoire",
     period: "provisoire-2026",
@@ -1978,6 +2269,15 @@ export const initialPlannings = [
     coach: "MOURAD"
   },
   {
+    id: "prov-20",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "vendredi",
+    timeSlot: "12h30-13h30",
+    activity: "SPARRING ANGLAISE ET KICK",
+    coach: "MOURAD"
+  },
+  {
     id: "prov-21",
     salle: "portet-provisoire",
     period: "provisoire-2026",
@@ -1985,6 +2285,35 @@ export const initialPlannings = [
     timeSlot: "18h-19h",
     activity: "BOXE AMATEURS ET PROS",
     coach: "MOURAD"
+  },
+  {
+    id: "prov-22",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "vendredi",
+    timeSlot: "19h-21h30",
+    activity: "SPARRING ANGLAISE ET KICK",
+    coach: "MOURAD",
+    rowSpan: 2
+  },
+  {
+    id: "prov-23",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "samedi",
+    timeSlot: "10h-11h",
+    activity: "BOXE FRANCAISE",
+    coach: "Non Assigné"
+  },
+  {
+    id: "prov-24",
+    salle: "portet-provisoire",
+    period: "provisoire-2026",
+    day: "samedi",
+    timeSlot: "10h-11h",
+    activity: "KICK ENFANTS",
+    coach: "Non Assigné",
+    subColumn: 1
   },
   {
     id: "prov-25",
@@ -2044,358 +2373,6 @@ export const initialPlannings = [
     activity: "BOXE EDUCATIVE 12/16ANS",
     coach: "Non Assigné",
     colSpan: 2
-  },
-  {
-    id: "sum-1",
-    salle: "saint-cyprien",
-    period: "ete-2026",
-    day: "lundi",
-    timeSlot: "10h-11h",
-    activity: "COURS ETE",
-    coach: "MEHDI B"
-  },
-  {
-    id: "sum-2",
-    salle: "saint-cyprien",
-    period: "ete-2026",
-    day: "lundi",
-    timeSlot: "12h30-13h30",
-    activity: "COURS ETE",
-    coach: "DADI"
-  },
-  {
-    id: "sum-3",
-    salle: "saint-cyprien",
-    period: "ete-2026",
-    day: "lundi",
-    timeSlot: "20h-21h",
-    activity: "COURS ETE",
-    coach: "WALID"
-  },
-  {
-    id: "sum-4",
-    salle: "ramonville",
-    period: "ete-2026",
-    day: "lundi",
-    timeSlot: "12h30-13h30",
-    activity: "COURS ETE",
-    coach: "RENAUD"
-  },
-  {
-    id: "sum-5",
-    salle: "ramonville",
-    period: "ete-2026",
-    day: "lundi",
-    timeSlot: "20h-21h",
-    activity: "COURS ETE",
-    coach: "FAYEZ"
-  },
-  {
-    id: "rentree-250",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "11h-12h",
-    activity: "BOXE ANGLAISE",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-251",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "14h15-15h",
-    activity: "BOXE PIEDS POINGS (3/6ANS)",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-252",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "15h-16h",
-    activity: "BOXE PIEDS POINGS 7/11 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-253",
-    salle: "etats-unis-boxe",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "16h-17h",
-    activity: "BOXE PIEDS POINGS 12/16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-254",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "14h15-15h",
-    activity: "MMA ENFANTS 10/16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-255",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "15h-16h",
-    activity: "MMA ENFANTS 10/16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-256",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "16h15-17h15",
-    activity: "ASSO MMA ENFANTS 10/16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-257",
-    salle: "etats-unis-fitness",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "11h-12h",
-    activity: "CROSS-TRAINING",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-258",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "11h-12h",
-    activity: "BOXING CAMP",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-259",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "14h15-15h",
-    activity: "BABY BOXE (3/6ANS)",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-260",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "15h-16h",
-    activity: "BOXE EDUCATIVE 7/11 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-261",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "16h-17h",
-    activity: "BOXE EDUCATIVE 12/16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-262",
-    salle: "minimes",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "18h30-19h30",
-    activity: "BOXING CAMP",
-    coach: "HICHAM"
-  },
-  {
-    id: "rentree-263",
-    salle: "minimes",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "18h30-19h30",
-    activity: "BOXING CAMP",
-    coach: "HICHAM"
-  },
-  {
-    id: "rentree-264",
-    salle: "etats-unis-mma",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "15h-16h",
-    activity: "ASSO MMA ENFANTS 10 /16 ANS",
-    coach: "Non Assigné"
-  },
-  {
-    id: "rentree-265",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "mercredi",
-    timeSlot: "17h-18h",
-    activity: "LADY BOXING",
-    coach: "INGRID"
-  },
-  {
-    id: "rentree-266",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "vendredi",
-    timeSlot: "11h-12h",
-    activity: "OPEN SPARRING",
-    coach: "MOURAD"
-  },
-  {
-    id: "rentree-267",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "vendredi",
-    timeSlot: "12h30-13h30",
-    activity: "ANGLAISE / KICK",
-    coach: "MOURAD"
-  },
-  {
-    id: "rentree-268",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "vendredi",
-    timeSlot: "19h-20h",
-    activity: "OPEN SPARRING",
-    coach: "MOURAD"
-  },
-  {
-    id: "rentree-269",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "vendredi",
-    timeSlot: "20h-21h30",
-    activity: "ANGLAISE / KICK",
-    coach: "MOURAD"
-  },
-  {
-    id: "rentree-271",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "12h30-13h30",
-    activity: "MMA",
-    coach: "CALLUM"
-  },
-  {
-    id: "rentree-272",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "17h-18h",
-    activity: "PREPATION PHYSIQUE",
-    coach: "CALLUM"
-  },
-  {
-    id: "rentree-273",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "17h-18h",
-    activity: "OPEN SPARRING",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-274",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mardi",
-    timeSlot: "20h-21h30",
-    activity: "ANGLAISE LOISIRS",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-275",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "20h-21h30",
-    activity: "BOXE AMATEURS ET PROS",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-276",
-    salle: "portet-combat",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "20h-21h30",
-    activity: "OPEN SPARRING",
-    coach: "VAL"
-  },
-  {
-    id: "rentree-277",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "mercredi",
-    timeSlot: "18h-18h40",
-    activity: "BOXE ANGLAISE",
-    coach: "SONIA"
-  },
-  {
-    id: "rentree-278",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "jeudi",
-    timeSlot: "12h40-13h20",
-    activity: "BOXE PIEDS POINGS",
-    coach: "SONIA"
-  },
-  {
-    id: "rentree-279",
-    salle: "ramonville",
-    period: "rentree-2026",
-    day: "vendredi",
-    timeSlot: "18h-18h40",
-    activity: "LADY PUNCH",
-    coach: "VALENTIN G"
-  },
-  {
-    id: "rentree-280",
-    salle: "saint-cyprien",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "15h-16h",
-    activity: "BOXE PIEDS POINGS",
-    coach: "ACCES LIBRE"
-  },
-  {
-    id: "rentree-77",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "10h-11h30",
-    activity: "BOXE FRANCAISE",
-    coach: "SAMUEL"
-  },
-  {
-    id: "rentree-89",
-    salle: "portet-mma",
-    period: "rentree-2026",
-    day: "samedi",
-    timeSlot: "16h-17h",
-    activity: "KICK ENFANTS",
-    coach: "INGRID"
-  },
-  {
-    id: "prov-23",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "samedi",
-    timeSlot: "10h-11h",
-    activity: "BOXE FRANCAISE",
-    coach: "Non Assigné"
-  },
-  {
-    id: "prov-24",
-    salle: "portet-provisoire",
-    period: "provisoire-2026",
-    day: "samedi",
-    timeSlot: "10h-11h",
-    activity: "KICK ENFANTS",
-    coach: "Non Assigné",
-    subColumn: 1
   },
 ];
 
