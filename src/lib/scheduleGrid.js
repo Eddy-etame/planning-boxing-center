@@ -209,14 +209,29 @@ function elargirSiSeule(session, gymId, sessions) {
   if (!sessions || !sessions.length) return session;
   const total = getDaySubColumnCount(gymId, session.day);
   if (total <= 1) return session;
+  if (session.subColumn && session.subColumn > 0) return session;
   const dejaPleine = (session.colSpan || 1) >= total;
   if (dejaPleine) return session;
+
+  const getBounds = (s) => {
+    const parts = (s.timeSlot || "").split("-");
+    const d = parseTime(parts[0]);
+    let f = parts.length === 2 ? parseTime(parts[1]) : d + 60;
+    if (s.rowSpan && s.rowSpan > 1) {
+      f = d + (s.rowSpan * 60);
+    }
+    return [d, f];
+  };
+
+  const [d1, f1] = getBounds(session);
+
   const voisine = sessions.some(
-    (a) =>
-      a !== session &&
-      a.day === session.day &&
-      (a.period === undefined || a.period === session.period) &&
-      chevauche(a.timeSlot, session.timeSlot)
+    (a) => {
+      if (a === session || a.day !== session.day) return false;
+      if (a.period !== undefined && session.period !== undefined && a.period !== session.period) return false;
+      const [d2, f2] = getBounds(a);
+      return d1 < f2 && d2 < f1;
+    }
   );
   if (voisine) return session;
   return { ...session, subColumn: 0, colSpan: total };

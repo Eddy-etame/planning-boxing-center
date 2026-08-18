@@ -3,6 +3,10 @@ import xml.etree.ElementTree as ET
 import os
 import re
 import json
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PLANNINGS_DIR = os.environ.get(
@@ -575,6 +579,97 @@ def generate_js():
     for idx, s in enumerate(all_sessions):
         s["id"] = f"rentree-{idx + 1}"
 
+    portet_provisoire_sessions = [
+        # Lundi
+        {"id": "prov-1", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "lundi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "ANGLAISE", "coach": "VAL"},
+        {"id": "prov-2", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "lundi", "subColumn": 0, "timeSlot": "18h-19h", "activity": "BOXE EDUCATIVE CONFIRMES", "coach": "VAL"},
+        {"id": "prov-3", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "lundi", "subColumn": 0, "timeSlot": "19h-21h30", "activity": "BOXE AMATEURS ET PROS", "coach": "VAL", "rowSpan": 2},
+
+        # Mardi
+        {"id": "prov-4", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mardi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "PREPARATION PHYSIQUE", "coach": "SAMUEL"},
+        {"id": "prov-5", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mardi", "subColumn": 0, "timeSlot": "18h-19h", "activity": "LADY KICK", "coach": "SAMUEL"},
+        {"id": "prov-6", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mardi", "subColumn": 0, "timeSlot": "19h-20h", "activity": "KICK / K1", "coach": "SAMUEL"},
+        {"id": "prov-7", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mardi", "subColumn": 0, "timeSlot": "20h-21h30", "activity": "ANGLAISE LOISIRS", "coach": "SAMUEL"},
+
+        # Mercredi
+        {"id": "prov-8", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "KICK / K1", "coach": "INGRID"},
+        {"id": "prov-9", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "14h-15h", "activity": "KICK ENFANTS", "coach": "INGRID"},
+        {"id": "prov-10", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "15h-16h", "activity": "KICK ADOS", "coach": "INGRID"},
+        {"id": "prov-11", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "16h-17h", "activity": "BOXE EDUCATIVE 7/11ANS", "coach": "INGRID"},
+        {"id": "prov-12", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "17h-18h", "activity": "BOXE EDUCATIVE 12/16ANS", "coach": "INGRID"},
+        {"id": "prov-13", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "18h-19h", "activity": "BOXING LADY", "coach": "INGRID"},
+        {"id": "prov-14", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "19h-20h", "activity": "PREPARATION PHYSIQUE", "coach": "INGRID"},
+        {"id": "prov-15", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "20h-21h30", "activity": "KICK / K1", "coach": "INGRID"},
+
+        # Jeudi
+        {"id": "prov-16", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "ANGLAISE", "coach": "MOURAD"},
+        {"id": "prov-17", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "18h-19h", "activity": "LADY KICK", "coach": "MOURAD"},
+        {"id": "prov-18", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "19h-20h", "activity": "KICK / K1", "coach": "MOURAD"},
+        {"id": "prov-19", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "20h-21h30", "activity": "ANGLAISE LOISIRS", "coach": "MOURAD"},
+
+        # Vendredi
+        {"id": "prov-20", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "vendredi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "SPARRING ANGLAISE ET KICK", "coach": "MOURAD"},
+        {"id": "prov-21", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "vendredi", "subColumn": 0, "timeSlot": "18h-19h", "activity": "BOXE AMATEURS ET PROS", "coach": "MOURAD"},
+        {"id": "prov-22", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "vendredi", "subColumn": 0, "timeSlot": "19h-21h30", "activity": "SPARRING ANGLAISE ET KICK", "coach": "MOURAD", "rowSpan": 2},
+
+        # Samedi (subColumn 0 and 1)
+        {"id": "prov-23", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 0, "timeSlot": "10h-11h", "activity": "BOXE FRANCAISE", "coach": "Non Assigné"},
+        {"id": "prov-24", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 1, "timeSlot": "10h-11h", "activity": "KICK ENFANTS", "coach": "Non Assigné"},
+        {"id": "prov-25", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 0, "timeSlot": "11h-12h", "activity": "PREPARATION PHYSIQUE", "coach": "Non Assigné"},
+        {"id": "prov-26", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 1, "timeSlot": "11h-12h", "activity": "KICK ADOS", "coach": "Non Assigné"},
+        {"id": "prov-27", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "ANGLAISE", "coach": "Non Assigné", "colSpan": 2},
+        {"id": "prov-28", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 0, "timeSlot": "15h-16h", "activity": "BABY BOXE 4/6 ANS", "coach": "Non Assigné", "colSpan": 2},
+        {"id": "prov-29", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 0, "timeSlot": "16h-17h", "activity": "BOXE EDUCATIVE 7/11ANS", "coach": "Non Assigné", "colSpan": 2},
+        {"id": "prov-30", "salle": "portet-provisoire", "period": "provisoire-2026", "day": "samedi", "subColumn": 0, "timeSlot": "17h-18h", "activity": "BOXE EDUCATIVE 12/16ANS", "coach": "Non Assigné", "colSpan": 2},
+    ]
+
+    minimes_sessions = [
+        # LUNDI (2 subcolumns)
+        {"id": "min-1", "salle": "minimes", "period": "rentree-2026", "day": "lundi", "subColumn": 0, "timeSlot": "12h40-13h20", "activity": "BOXING CAMP", "coach": "Non Assigné", "colSpan": 2},
+        {"id": "min-2", "salle": "minimes", "period": "rentree-2026", "day": "lundi", "subColumn": 0, "timeSlot": "18h-19h30", "activity": "BOXE COMPÉTITEURS", "coach": "MEHDI B", "rowSpan": 2},
+        {"id": "min-3", "salle": "minimes", "period": "rentree-2026", "day": "lundi", "subColumn": 1, "timeSlot": "18h30-19h30", "activity": "BOXING LADY", "coach": "CHLOE"},
+        {"id": "min-4", "salle": "minimes", "period": "rentree-2026", "day": "lundi", "subColumn": 0, "timeSlot": "19h40-21h", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "MEHDI B", "colSpan": 2},
+
+        # MARDI (2 subcolumns)
+        {"id": "min-5", "salle": "minimes", "period": "rentree-2026", "day": "mardi", "subColumn": 0, "timeSlot": "12h40-13h20", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "HICHAM", "colSpan": 2},
+        {"id": "min-6", "salle": "minimes", "period": "rentree-2026", "day": "mardi", "subColumn": 0, "timeSlot": "18h-19h30", "activity": "BOXE COMPÉTITEURS", "coach": "MEHDI B", "rowSpan": 2},
+        {"id": "min-7", "salle": "minimes", "period": "rentree-2026", "day": "mardi", "subColumn": 1, "timeSlot": "18h30-19h30", "activity": "CROSS-TRAINING", "coach": "HICHAM"},
+        {"id": "min-8", "salle": "minimes", "period": "rentree-2026", "day": "mardi", "subColumn": 0, "timeSlot": "19h40-21h", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "MEHDI B", "colSpan": 2},
+
+        # MERCREDI (1 column)
+        {"id": "min-9", "salle": "minimes", "period": "rentree-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "12h40-13h20", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "HICHAM"},
+        {"id": "min-10", "salle": "minimes", "period": "rentree-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "15h-16h", "activity": "BOXE EDUCATIVE ENFANTS (7/11ANS)", "coach": "MEHDI B"},
+        {"id": "min-11", "salle": "minimes", "period": "rentree-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "16h-17h", "activity": "BOXE EDUCATIVE ADOS (12/16ANS)", "coach": "MEHDI B"},
+        {"id": "min-12", "salle": "minimes", "period": "rentree-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "17h-18h30", "activity": "BOXE EDUCATIVE COMPÉTITEURS", "coach": "MEHDI B", "rowSpan": 2},
+        {"id": "min-13", "salle": "minimes", "period": "rentree-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "18h30-19h30", "activity": "BOXING LADY", "coach": "DAVID"},
+        {"id": "min-14", "salle": "minimes", "period": "rentree-2026", "day": "mercredi", "subColumn": 0, "timeSlot": "19h40-21h", "activity": "BOXE PIEDS POINGS", "coach": "DAVID"},
+
+        # JEUDI (2 subcolumns)
+        {"id": "min-15", "salle": "minimes", "period": "rentree-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "12h40-13h20", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "HICHAM", "colSpan": 2},
+        {"id": "min-16", "salle": "minimes", "period": "rentree-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "18h-19h30", "activity": "BOXE COMPÉTITEURS", "coach": "MEHDI B", "rowSpan": 2},
+        {"id": "min-17", "salle": "minimes", "period": "rentree-2026", "day": "jeudi", "subColumn": 1, "timeSlot": "18h30-19h30", "activity": "CROSS-TRAINING", "coach": "HICHAM"},
+        {"id": "min-18", "salle": "minimes", "period": "rentree-2026", "day": "jeudi", "subColumn": 0, "timeSlot": "19h40-21h", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "MEHDI B", "colSpan": 2},
+
+        # VENDREDI (1 column)
+        {"id": "min-19", "salle": "minimes", "period": "rentree-2026", "day": "vendredi", "subColumn": 0, "timeSlot": "12h40-13h20", "activity": "BOXING CAMP", "coach": "Non Assigné"},
+        {"id": "min-20", "salle": "minimes", "period": "rentree-2026", "day": "vendredi", "subColumn": 0, "timeSlot": "18h-19h30", "activity": "BOXE COMPÉTITEURS", "coach": "MEHDI B", "rowSpan": 2},
+        {"id": "min-21", "salle": "minimes", "period": "rentree-2026", "day": "vendredi", "subColumn": 0, "timeSlot": "19h40-21h", "activity": "BOXE ANGLAISE (LOISIRS)", "coach": "MEHDI B"},
+
+        # SAMEDI (1 column)
+        {"id": "min-22", "salle": "minimes", "period": "rentree-2026", "day": "samedi", "subColumn": 0, "timeSlot": "11h-12h", "activity": "BOXING CAMP", "coach": "Non Assigné"},
+        {"id": "min-23", "salle": "minimes", "period": "rentree-2026", "day": "samedi", "subColumn": 0, "timeSlot": "14h15-15h", "activity": "BABY BOXE (3/6ANS)", "coach": "MEHDI B"},
+        {"id": "min-24", "salle": "minimes", "period": "rentree-2026", "day": "samedi", "subColumn": 0, "timeSlot": "15h-16h", "activity": "BOXE EDUCATIVE ENFANTS (7/11ANS)", "coach": "MEHDI B"},
+        {"id": "min-25", "salle": "minimes", "period": "rentree-2026", "day": "samedi", "subColumn": 0, "timeSlot": "16h-17h", "activity": "BOXE EDUCATIVE ADOS (12/16ANS)", "coach": "MEHDI B"},
+        {"id": "min-26", "salle": "minimes", "period": "rentree-2026", "day": "samedi", "subColumn": 0, "timeSlot": "17h-18h30", "activity": "BOXE EDUCATIVE COMPÉTITEURS", "coach": "MEHDI B", "rowSpan": 2},
+        {"id": "min-27", "salle": "minimes", "period": "rentree-2026", "day": "samedi", "subColumn": 0, "timeSlot": "18h30-19h30", "activity": "OPEN SPARRING", "coach": "MEHDI B"},
+    ]
+
+    all_sessions = [s for s in all_sessions if s["salle"] != "minimes"]
+    all_sessions.extend(minimes_sessions)
+    all_sessions.extend(portet_provisoire_sessions)
+    all_grid_configs["portet-provisoire"] = {"subColumns": {"samedi": 2}}
+    all_grid_configs["minimes"] = {"subColumns": {"lundi": 2, "mardi": 2, "jeudi": 2}}
+
     summer_sessions = [
         {"id": "sum-1", "salle": "saint-cyprien", "period": "ete-2026", "day": "lundi", "subColumn": 0, "timeSlot": "10h-11h", "activity": "COURS ETE", "coach": "MEHDI B"},
         {"id": "sum-2", "salle": "saint-cyprien", "period": "ete-2026", "day": "lundi", "subColumn": 0, "timeSlot": "12h30-13h30", "activity": "COURS ETE", "coach": "DADI"},
@@ -682,6 +777,7 @@ export const activityColors = {
   "LADY BOXING": "bg-fuchsia-700/10 text-fuchsia-700 border-fuchsia-200",
   "ANGLAISE LOISIRS": "bg-blue-600/10 text-blue-700 border-blue-200",
   "SPARRING ANGLAISE": "bg-orange-600/10 text-orange-700 border-orange-200",
+  "SPARRING ANGLAISE ET KICK": "bg-gradient-to-r from-blue-600 via-blue-600 to-orange-500 text-white border-blue-400 font-bold",
   "OPEN SPARRING": "bg-orange-600/10 text-orange-700 border-orange-200",
   "JJB": "bg-indigo-600/10 text-indigo-700 border-indigo-200",
   "KICK / K1": "bg-blue-500/10 text-blue-600 border-blue-200",
@@ -714,6 +810,7 @@ export const gyms = [
   { id: "etats-unis-boxe", name: "États-Unis — Salle Boxe" },
   { id: "etats-unis-mma", name: "États-Unis — Salle MMA" },
   { id: "etats-unis-fitness", name: "États-Unis — Boxing Fitness" },
+  { id: "portet-provisoire", name: "Portet-sur-Garonne (Planning Provisoire)" },
   { id: "portet-combat", name: "Portet-sur-Garonne (Combat)" },
   { id: "portet-mma", name: "Portet-sur-Garonne (MMA)" }
 ];

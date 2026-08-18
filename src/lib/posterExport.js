@@ -56,6 +56,7 @@ const DISCIPLINES = [
   { label: "Boxing HIIT", color: "#15803D", test: /HIIT/ },
   { label: "Cross-Training", color: "#A3E635", test: /CROSS/ },
   { label: "Prépa physique", color: "#10B981", test: /PR[EÉ]PA|\bFIT\b/ },
+  { label: "Sparring Anglaise & Kick", color: "linear-gradient(135deg, #2563EB 0%, #2563EB 50%, #EA580C 50%, #EA580C 100%)", ink: "#FFFFFF", test: /SPARRING ANGLAISE ET KICK/ },
   { label: "Pieds-Poings / Kick", color: "#F97316", test: /THA[ÏI]|KICK|K1|PIEDS POINGS|FRANCAISE/ },
   { label: "Boxe Anglaise", color: "#3B82F6", test: /ANGLAISE|SPARRING/ },
   { label: "Cours Été", color: "#CA8A04", test: /COURS ETE/ },
@@ -113,7 +114,7 @@ function disciplineLegendHtml(sessions) {
   for (const s of sessions) {
     if (!s.activity || s.activity === "ACCES LIBRE") continue;
     const d = disciplineOf(s.activity);
-    present.set(d.label, d.color);
+    present.set(d.label, d);
   }
   // Preserve the palette's canonical order.
   const ordered = DISCIPLINES.filter((d) => present.has(d.label));
@@ -127,7 +128,22 @@ function disciplineLegendHtml(sessions) {
       </div>`
     )
     .join("");
-  return `<div style="padding:6px 24px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;">${chips}</div>`;
+  /* La pastille « accès libre » ferme le ruban, dans le gris exact des cases
+     vides : sans elle, une couleur de la grille reste sans légende. La phrase
+     dessous retourne la lecture — une case vide n'est pas un trou dans le
+     planning, c'est la salle qui vous appartient. Aucun planning concurrent
+     ne le dit ; ça ne coûte rien à écrire et ça justifie l'abonnement mieux
+     qu'un cours de plus. */
+  const chipLibre = `
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.08);border-radius:999px;padding:5px 15px 5px 7px;">
+          <span style="height:13px;width:13px;border-radius:999px;background:rgba(255,255,255,0.14);box-shadow:0 0 0 1px rgba(255,255,255,0.18);"></span>
+          <span style="font-size:10px;font-weight:900;letter-spacing:0.05em;color:rgba(255,255,255,0.55);text-transform:uppercase;">Accès libre</span>
+        </div>`;
+  const phraseLibre = `
+      <div style="padding:0 24px 16px;text-align:center;font-size:10.5px;font-weight:700;letter-spacing:0.045em;color:rgba(255,255,255,0.46);">
+        Case libre = salle ouverte. Accès badge, entraînement libre.
+      </div>`;
+  return `<div style="padding:6px 24px 10px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;">${chips}${chipLibre}</div>${phraseLibre}`;
 }
 
 const ACCES_LIBRE_HTML = `<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:0.18em;color:rgba(255,255,255,0.28);text-transform:uppercase;height:100%;min-height:54px;box-sizing:border-box;">accès libre</div>`;
@@ -137,14 +153,15 @@ const ACCES_LIBRE_HTML = `<div style="background:rgba(255,255,255,0.025);border:
 function classCellHtml(activity, sub) {
   const d = disciplineOf(activity);
   const color = d.color;
-  // Per-discipline text-colour override (e.g. Boxing Camp forces white);
-  // everything else falls back to auto-contrast against the cell colour.
-  const ink = d.ink || readableText(color);
+  const ink = d.ink || (color.startsWith("linear-gradient") ? "#FFFFFF" : readableText(color));
   const subHtml = sub
     ? `<span style="font-size:8px;font-weight:800;text-transform:uppercase;margin-top:4px;letter-spacing:0.12em;opacity:0.78;">${escapeHtml(sub)}</span>`
     : "";
+  const bgStyle = color.startsWith("linear-gradient")
+    ? `background:${color};`
+    : `background:linear-gradient(155deg,${color} 0%,${color}d9 100%);`;
   return `
-    <div style="background:linear-gradient(155deg,${color} 0%,${color}d9 100%);color:${ink};border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 6px;text-align:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12),0 4px 10px rgba(0,0,0,0.18);box-sizing:border-box;height:100%;min-height:54px;">
+    <div style="${bgStyle}color:${ink};border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 6px;text-align:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12),0 4px 10px rgba(0,0,0,0.18);box-sizing:border-box;height:100%;min-height:54px;">
       <span style="font-size:10.5px;font-weight:900;text-transform:uppercase;line-height:1.12;word-break:break-word;letter-spacing:0.02em;">${escapeHtml(activity)}</span>
       ${subHtml}
     </div>`;
@@ -238,7 +255,7 @@ function coiffe(gymId, gymName) {
     return {
       eyebrow: "Planning provisoire",
       title: "PORTET-SUR-GARONNE",
-      periode: "Du 24 aout au 3 octobre · nouveau planning le 4 octobre",
+      periode: null,
     };
   }
   return { eyebrow: "Planning des cours", title: gymName.toUpperCase(), periode: null };
