@@ -1477,7 +1477,7 @@ export const initialPlannings = [
     period: "rentree-2026",
     day: "samedi",
     timeSlot: "18h20-20h",
-    activity: "BOXE PIEDS POINGS 18H/20H",
+    activity: "BOXE THAI/ K1 18H/20H",
     rowSpan: 2,
     coach: "Non Assigné"
   },
