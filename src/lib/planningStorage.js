@@ -1,8 +1,20 @@
-import { initialPlannings, coachColors as defaultCoachColors, DATA_VERSION as SRC_VERSION } from "@/data/plannings";
+import { initialPlannings, coachColors as defaultCoachColors } from "@/data/plannings";
 
-// Derived from a content hash of the generated data (build_db.py). Any change to
-// the source plannings bumps this automatically, so stale caches re-seed.
-export const DATA_VERSION = SRC_VERSION || "src-fallback";
+/* La version est un hachage du CONTENU, calcule ici meme : toute edition de
+   plannings.js — a la main comme par generateur — reseme les navigateurs.
+
+   Avant : on importait un DATA_VERSION que build_db.py etait cense ecrire.
+   Il n'existe plus depuis que les donnees sont transcrites depuis les PDF ;
+   l'import rendait undefined, le repli "src-fallback" devenait une
+   CONSTANTE, et plus aucun navigateur ne se resemait — quiconque avait
+   deja ouvert l'outil voyait d'anciennes donnees, sans aucun indice. */
+function hashContenu(objet) {
+  const s = JSON.stringify(objet);
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return "c" + (h >>> 0).toString(36) + "-" + s.length;
+}
+export const DATA_VERSION = hashContenu([initialPlannings, defaultCoachColors]);
 
 export function loadPlanningsFromStorage() {
   if (typeof window === "undefined") {
