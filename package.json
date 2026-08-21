@@ -3,6 +3,8 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
+    "_note_prepare": "npm install branche le crochet qui retire les signatures d'outil des messages de commit (voir .githooks/commit-msg)",
+    "prepare": "git config core.hooksPath .githooks",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
